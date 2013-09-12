@@ -133,9 +133,10 @@ classdef PCdat
         
         function obj = getxlsm(obj)
             pthfil = [obj.path obj.file]
-            [obj.w, obj.N_A, obj.N_D, obj.OC, ~, ~, obj.time, obj.vpc,...
-                obj.vref, obj.dN, obj.tau, ~, obj.suns]...
-                = sint_3_4_extract (file)
+            
+%             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
+            [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
+                = PCdat.sint_3_4_extract ([obj.path obj.file]);
         end
         
         function [t_o, dN_o, suns_o, tau_o, simIn] = j0datExtract (obj, varargin)
@@ -358,36 +359,47 @@ classdef PCdat
         end
     end
     methods (Static)
-        function [w, N_Ai, N_Di, opt, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns]...
+        function [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
                 = sint_3_4_extract (file)
             % Find a better method for handelling the xlsread errors
             % allows user ot shut down file while opening
             try 
-                [SummaryN, SummaryT] = xlsread(file, 'Summary', 'A2:W2');
+                [SummaryN, SummaryT] = xlsread(file, 'Summary', 'D2:W2');
             catch err
                 input ('There has been an error opening the file, try closing all open SS, press enter to continue','s')
-                [SummaryN, SummaryT] = xlsread(file, 'Summary', 'A2:W2');
+                [SummaryN, SummaryT] = xlsread(file, 'Summary', 'D2:W2');
             end
 
 
-            w = SummaryN(1,4);
-
+            w = SummaryN(1,1);
+            
 
 
             [UserN, UserT]  = xlsread(file, 'User', 'D6');
 
             if strcmp (UserT, 'p-type')
-                N_Ai = SummaryN(1,5); 
+                N_Ai = SummaryN(1,2); 
                 N_Di = 0; 
             else
-                N_Di = SummaryN(1,5);
+                N_Di = SummaryN(1,2);
                 N_Ai = 0;
             end
 
-            opt = SummaryN(1,6);
+            OC = SummaryN(1,3);
             mode = SummaryT(1,8);
-            ohmsq = SummaryN(1,11);
-
+            ohmsq = SummaryN(1,10);
+            gref = SummaryN(1,end-3);
+            a = SummaryN(1,end - 2);
+            b = SummaryN(1,end - 1);
+            c = SummaryN(1,end);
+            
+            
+            as = a;
+            bs = b-2*c*a;
+            cs = c^2*a-c*b-1/ohmsq;
+            
+            vdark = (-bs + sqrt(bs^2-4*as*cs))/(2*as);
+            
             [RawDN, RawDT] = xlsread(file, 'RawData', 'A2:I126');
 
             t = RawDN(1:end,1);
