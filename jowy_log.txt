@@ -1,0 +1,5 @@
+.LOG
+1)GUI, cant find dark voltage in sinton version 4.3 .xlsm files
+2)MCM_meas, cant run object to retrieve the inputs from xlsm files
+3)cant run '=darkvoltage' in sinton version 4.3 .xlsm files
+[ok]Done for file open and label search for time and photovoltage 
