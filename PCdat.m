@@ -109,7 +109,7 @@ classdef PCdat
             clf
             plot (obj.time, obj.vref, 'xr')
             hold on
-            [x,y,index] = rangesel(obj.time, obj.vpc)              
+            [x,y,index] = PCdat.rangesel(obj.time, obj.vpc)              
             hold off
             
             
@@ -237,7 +237,8 @@ classdef PCdat
             
         end
         
-        function 
+%         function 
+%         end
     end
 end
 
