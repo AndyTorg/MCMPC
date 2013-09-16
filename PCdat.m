@@ -111,10 +111,11 @@ classdef PCdat
             hold on
             [x,y,index] = PCdat.rangesel(obj.time, obj.vpc)              
             hold off
-            
+            obj = PCdat.objRangeSel(obj,index{1})
+            clf
+            plot (obj.time, [obj.vpc, obj.vref], '+')
             
         end
-
         function obj = measrange(obj)
             
         end
@@ -237,6 +238,22 @@ classdef PCdat
             
         end
         
+        function [arObjO] = objRangeSel (arObj, selvec)
+%           [arObjO] = objRangeSel (arObj, selvec)
+%           Resizes all the vectors in the object to the selvec, i.e. keeps
+%           the index of the chosen files. 
+           fields = fieldnames(arObj);
+           
+           for i = 1:length (fields)
+               if isnumeric(arObj.(char(fields(i))))
+                   if length (arObj.(char(fields(i)))) > 1
+                       arObj.(char(fields(i))) = arObj.(char(fields(i)))(selvec)
+                   end
+               end
+           end
+           arObjO = arObj
+            
+        end
 %         function 
 %         end
     end
