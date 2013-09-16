@@ -172,9 +172,8 @@ function btnImportData_Callback(hObject, eventdata, handles)
 % hObject    handle to btnImportData (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% [filename, pathname, filterindex] = uigetfile('*.*', 'Pick a MATLAB code file');
-obj = PCdat()
-filename
+[filename, pathname, filterindex] = uigetfile('*.*', 'Pick a MATLAB code file');
+ filename
  pathname
  filterindex
  whos 

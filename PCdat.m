@@ -89,279 +89,44 @@ classdef PCdat
             end
         end
         function obj = getxls(obj)
-            pthfil = [obj.path obj.file]
-            [calc, modetext] = xlsread(pthfil, 'Calc', 'A6:X166');
-            
-%             RAW DATA
-            obj.time = calc(7:end-33,1);
-            obj.vpc = calc(7:end-33, 2);
-            obj.vref = calc(7:end-33, 3);
-            obj.vdark = calc(end,2);
 
-%             MEAS PARAS
-            obj.a = calc(2,19);
-            obj.b = calc(2,20);
-            obj.c = calc(2,21);
-            obj.off = calc(2,22);
-            obj.gref = calc(1,19);
-            
-%             SAMPLE PARAS
-            obj.width = calc(1,1);
-            obj.OC = calc(1,3);
-            if calc(16,end) == calc(15,end)
-                obj.N_D = calc(16,end);
-                obj.N_A = 0;
-            elseif calc(16,end) == calc(14,end)
-                obj.N_D = 0;
-                obj.N_A = calc(16,end);
-            else
-                warning('Can not extract the doping')
-            end 
-            
-            
-%             CALCULATED DATA
-            obj.dN = calc(7:end-33, 19);
-            obj.itau = calc(7:end-33, 13);
-            obj.tau = calc(7:end-33, 12);
-            obj.G = calc(7:end-33, 11);     
-            obj.suns = calc(7:end-33, 5);  
+            [obj.width, obj.N_A, obj.N_D, obj.OC, ~, ~, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, ~, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
+                = PCdat.sint_3_2_extract ([obj.path obj.file]);
         end
-        
         function obj = getxlsx(obj)
             
         end
-        
         function obj = getxlsm(obj)
             pthfil = [obj.path obj.file]
-            
 %             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
             [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
                 = PCdat.sint_3_4_extract ([obj.path obj.file]);
         end
-        
-        function [t_o, dN_o, suns_o, tau_o, simIn] = j0datExtract (obj, varargin)
-            % [t_o, dN_o, tau_o, simIn] = j0datExtract (file, varargin)
-            % to additional inputs N_A, N_D
-            %%%%% Import Relevent Data into Matlab Model %%%%%
-
-            % the number of points measured by this iteration of the spread sheet
-            set(0,'DefaultFigureWindowStyle','docked')
-            close all
-            points = 122;
-
-            if nargin > 1 
-                N_A = varargin{1};
-                N_D = varargin{2};
-            end
-            if nargin > 2
-                mode = 'gen'
-            else 
-                mode = 'trans'
-            end
-
-            [calc, modetext] = xlsread(file, 'Calc', 'A6:W133');
-            time = calc(7:end,1);
-            w = calc(1,1);
-            dN = calc(7:end, 19)
-            itau = calc(7:end, 13);
-            tau = calc(7:end, 12);
-            G = calc(7:end, 11);     
-            suns = calc(7:end, 5);  
-            OC = calc (1,3);
-
-            if ~isvar('N_A')
-                [num text] = xlsread(file, 'User', 'D6');
-                if strcmp (text, 'p-type')
-                    N_A = calc(1,2); 
-                    N_D = 0; 
-                else
-                    N_D= calc(1,2);
-                    N_A = 0;
-                end
-            end
-
-            i = 1
-            if strcmp(mode, 'trans')
-                while G(i) > 2e12
-                    i = i + 1;
-                    if i > points
-                        s = warning
-                        warning on 
-                        warning('Generalised measurement>');
-                      s = warning
-                        warning on 
-                %         t_o= NaN; dN_o= NaN; tau_o = NaN; simIn = NaN;
-                %         return
-                        i = points
-                        break
-                    end
-                end
-            else
-                % It is not necessary to filter the data with the generation
-                i = 1
-            end
-
-            j = 10 
-            while dN(j) == dN(2)
-                j = j + 1;
-                if j > points
-                    error ('data too clipped')
-                end
-            end
-
-            k = length (dN)
-            while dN < max(N_D, N_A)
-            k = k - 1;
-                if k - max(i,j) < 10
-                    s = warning
-                    warning on 
-                    warning('Low injection measurement only');
-                    s = warning
-                    warning on 
-                    break;
-                end
-            end
-
-            plotdNdata (time, dN, G, i, j, k)
-
-
-
-
-            accept = 0;
-            while accept == 0
-                dataOK = input(['do you want to procced with this data?\n'...
-                                '*enter to proceed\n' ...
-                                '*b to use the black line and the first data point\n' ...
-                                '*r to use the red line as the first data point\n' ...
-                                '*n if the data is no good\n'...
-                                '*lp low dN add 3 more points\n'...
-                                '*lm low dN remove 3 ponts\n'...
-                                '*hp high dN add 3 points\n'...
-                                '*hm low dN remove 3 points\n'], 's')
-
-                switch dataOK
-                    case ''
-                        t_o = time (max(i,j):k);
-                        dN_o = dN (max(i,j):k);
-                        tau_o = tau (max(i,j):k);
-                        G_o = G (max(i,j):k);
-                        suns_o = suns (max(i,j):k);
-                        accept = 1;
-                    case 'r'|'R'
-                        t_o = time (max(j):k);
-                        dN_o = dN (max(j):k);
-                        tau_o = tau (max(j):k);
-                        G_o = G (max(j):k);
-                        suns_o = suns (max(j):k);
-                        accept = 1;
-                    case 'b'|'B'
-                        t_o = time (max(i):k);
-                        dN_o = dN (max(i):k);
-                        tau_o = tau (max(i):k);
-                         G_o = G (max(i):k);
-                         suns_o = suns (max(i):k);
-                        accept = 1;
-                    case 'n'|'N'
-                        t_o = nan;
-                        dN_o = nan;
-                        tau_o = nan;
-                        accept = 1;
-                        G_o = nan;
-                    case 'lp'
-                        if k < points - 3
-                            k = k + 3;
-                        else
-                            k = points;
-                        end
-                    case 'lm'
-                        if k > 1 + 3
-                            k = k - 3;
-                        else
-                            k = 1;
-                        end
-                    case 'hp'
-                        if i > 1 + 3
-                            i = i - 3;
-                        else
-                            i = 1;
-                        end
-                        if j > 1 + 3
-                            j = j - 3;
-                        else
-                            j = 1;
-                        end
-                    case 'hm'
-                        if i < points - 3
-                            i = i + 3;
-                        else
-                            i = points;
-                        end
-                        if j < points - 3
-                            j = j + 3;
-                        else
-                            j = points;
-                        end
-                    otherwise
-                        disp('INCORRECTOR INPUT')
-                end 
-
-            plotdNdata (time, dN, G, i, j, k)
-            set(0,'DefaultFigureWindowStyle','normal')
-
-            end
-
-
-            simIn.w = w;
-            simIn.N_A = N_A;
-            simIn.N_D = N_D;
-            simIn.OC = OC;
-            % j0.vt = calc(7:end, 2);
-            % j0.vr = calc(7:end, 3);
-            % j0.v0 = xlsread(file, 'Calc', 'B166');
-
-            warning('Retrieving all the input parameters from the Sinton spreadsheets')
-            %####have removed the the input parameters. 
-            % j0.a = calc(2,19);
-            % j0.b = calc(2,20);
-            % j0.c = calc(2,21);
-            % j0.off = calc(2,22);
-            % j0.off = 0;
-            % j0.gref = calc(1,19);
-            % j0.OC = calc(1,3);
-
-        end
-        
-        function plotdNdata (time, dN, G, i, j, k)
-            % clf
-            [ax, h1, h2] = plotyy (time, dN, time, G);
-            set (h1, 'Marker', 'x')
-            set (h1, 'Color', 'b')
-            set (h2, 'Marker', 'o')
-            set (h2, 'Color', 'g')
-            % set ((get(ax(1), 'Color')), 'g')
-            % set ((get(ax(2), 'Ylabel')),  'Generation (cm^{-3})')
-
-            xlabel('time (s)')
-            ylabel('\Delta \it{n} \rm{cm^{-3}}')
-            set ((get(ax(2), 'Ylabel')), 'String', 'Generation (cm^{-3})')
-
-            hold on 
-            if i > 0
-            plot ([time(i)*1.0001  time(i)*.9999], [0 1e18],'k','linewidth', 3);
-            end
-            if j>0
-            plot ([time(j)*1.0001  time(j)*.9999], [0 1e18],'r','linewidth', 3);
-            end
-            if k>0
-            plot ([time(k)*1.0001  time(k)*.9999], [0 1e18],'m','linewidth', 3);
-            end
+        function obj = TTrangesel (obj, varargin)
+%             obj = TTrangesel (obj, varargin)
+%             Tau time range select. Here we select the data form the tau
+%             time plot
+            clf
+            plot (obj.time, obj.vref, 'xr')
+            hold on
+            [x,y,index] = rangesel(obj.time, obj.vpc)              
             hold off
+            
+            
+        end
+
+        function obj = measrange(obj)
+            
         end
     end
     methods (Static)
         function [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
                 = sint_3_4_extract (file)
-            % Find a better method for handelling the xlsread errors
+%              [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
+%                 = sint_3_4_extract (file)
+%             Perhaps I can come up with a better output. This way makes it
+%             more usabel I think? 
+% %           Find a better method for handelling the xlsread errors
             % allows user ot shut down file while opening
             try 
                 [SummaryN, SummaryT] = xlsread(file, 'Summary', 'D2:W2');
@@ -370,11 +135,8 @@ classdef PCdat
                 [SummaryN, SummaryT] = xlsread(file, 'Summary', 'D2:W2');
             end
 
-
             w = SummaryN(1,1);
             
-
-
             [UserN, UserT]  = xlsread(file, 'User', 'D6');
 
             if strcmp (UserT, 'p-type')
@@ -410,6 +172,72 @@ classdef PCdat
             voc = RawDN(1:end,8);
             suns = RawDN(1:end,9);
         end
+        function [width, N_A, N_D, OC, mode, ohmsq, time, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
+                = sint_3_2_extract (file)
+%             [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
+%                 = sint_3_2_extract (file)
+%            Version 3_2 is is still in xls format. 
+            [calc, modetext] = xlsread(file, 'Calc', 'A6:X166');
+            
+%             RAW DATA
+            time = calc(7:end-33,1);
+            vpc = calc(7:end-33, 2);
+            vref = calc(7:end-33, 3);
+            vdark = calc(end,2);
+
+%             MEAS PARAS
+            a = calc(2,19);
+            b = calc(2,20);
+            c = calc(2,21);
+            off = calc(2,22);
+            gref = calc(1,19);
+            
+%             SAMPLE PARAS
+            width = calc(1,1);
+            OC = calc(1,3);
+            if calc(16,end) == calc(15,end)
+                N_D = calc(16,end);
+                N_A = 0;
+            elseif calc(16,end) == calc(14,end)
+                N_D = 0;
+                N_A = calc(16,end);
+            else
+                warning('Can not extract the doping')
+            end 
+            mode = '';
+            ohmsq = '';
+            voc = ''
+            
+%             CALCULATED DATA
+            dN = calc(7:end-33, 19);
+%             itau = calc(7:end-33, 13);
+            tau = calc(7:end-33, 12);
+%             G = calc(7:end-33, 11);     
+            suns = calc(7:end-33, 5);  
+        end
+        function [x,y, index] = rangesel (xaxis, yaxis, varargin)
+%             [x,y] = rangesel (xaxis, yaxis, varargin)
+% Function to interface with the wonderful select data gui interface
+% varargin can be loglog, semilogx, semilogy or plot. default plot is plot
+            if nargin == 3
+                if strcmpi(varargin{1}, 'loglog')
+                    loglog(xaxis, yaxis, '+');
+                elseif strcmpi(varargin{1}, 'semilogx')
+                    semilogx(xaxis, yaxis, '+');
+                elseif strcmpi(varargin{1}, 'semilogy')
+                    semilogy(xaxis, yaxis, '+');
+                elseif strcmpi(varargin{1}, 'plot')
+                    plot(xaxis, yaxis, '+');
+                end
+            elseif nargin == 2
+                plot(xaxis, yaxis, '+');
+            end
+            
+            [index,x,y] = selectdata ( 'SelectionMode', 'Rect','Verify', 'on');
+            
+        end
+        
+        function 
     end
 end
 
