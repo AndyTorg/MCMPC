@@ -53,9 +53,8 @@ classdef PC_calc < Si
 %     calculates the conductivity for the newer version of the SSS
 %     cond = (V-Coff)^2*A + (V-Coff)*B
             
-            cond = (vpc-Coff).^2*A + (vpc-Coff)*B - (vdark-Coff).^2*A + (vdark-Coff)*B;
-        end
-        
+            cond = (vpc-Coff).^2*A + (vpc-Coff)*B - (vdark-Coff).^2*A - (vdark-Coff)*B;
+        end  
         function [suns, gen] = generation(vref, vref_to_suns, OC)
             %function j0_o = gen_cal(j0_i)
             %Andrew Thomson v2 17/05/12
@@ -67,7 +66,6 @@ classdef PC_calc < Si
             gen = suns*0.038*OC/Si.q;
 
         end
-        
         function dN = carriers(cond, width, N_A, N_D, mu_mode)
             mu_s = Si.mobility_sum(1, N_A, N_D, 298, mu_mode);
             mu_s = ones(MCM_calc.rows(cond),1)*mu_s; % expand mu_sum so that it is the same size as the conductivity vector
@@ -151,15 +149,15 @@ classdef PC_calc < Si
             obj.tau_b = 1./Ndop_int;
 
         end
-        function obj = emittersatReichel(obj, PC_settings, varargin)
-            if nargin > 1
-%                 deal with an input bulk lifetime
-            end
-            
-            invtaub = 1./Si.auger(obj.dN, obj.N_A, obj.N_D, PC_settings.auger_mode);
-            [N_Dt, N_At, widtht , ~] = MCM_calc.pad_arrays (obj.N_D, obj.N_A, obj.width, invtaub);            
-            obj.j0eRei = (1./obj.tau - invtaub).*widtht * Si.ni^2 * Si.q / 2 ./ (N_Dt + N_At)     
-        end
+%         function obj = emittersatReichel(obj, PC_settings, varargin)
+%             if nargin > 1
+% %                 deal with an input bulk lifetime
+%             end
+%             
+%             invtaub = 1./Si.auger(obj.dN, obj.N_A, obj.N_D, PC_settings.auger_mode);
+%             [N_Dt, N_At, widtht , ~] = MCM_calc.pad_arrays (obj.N_D, obj.N_A, obj.width, invtaub);            
+%             obj.j0eRei = (1./obj.tau - invtaub).*widtht * Si.ni^2 * Si.q / 2 ./ (N_Dt + N_At)     
+%         end
     end
     
 end

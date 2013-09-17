@@ -120,7 +120,7 @@ classdef PCdat
             
         end
     end
-    methods (Static) %static is use for the method before creating an instance of a class, cal value to build an object
+    methods (Static)
         function [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
                 = sint_3_4_extract (file)
 %              [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
@@ -167,6 +167,7 @@ classdef PCdat
 
             t = RawDN(1:end,1);
             vpc = RawDN(1:end,2);
+            vpc = vpc + vdark;
             vref = RawDN(1:end,3);
             dN = RawDN(1:end,7);
             tau = RawDN(1:end,5);
@@ -185,6 +186,7 @@ classdef PCdat
             vpc = calc(7:end-33, 2);
             vref = calc(7:end-33, 3);
             vdark = calc(end,2);
+            vpc = vpc + vdark;
 
 %             MEAS PARAS
             a = calc(2,19);
