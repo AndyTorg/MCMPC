@@ -3,3 +3,7 @@
 2)MCM_meas, cant run object to retrieve the inputs from xlsm files
 3)cant run '=darkvoltage' in sinton version 4.3 .xlsm files
 [ok]Done for file open and label search for time and photovoltage 
+
+9:39 AM 9/17/2013
+[ok]by pushing the PCdat obj->GUI handles->GUI obj, all callback function can share the value
+-toogle button, can configure to string{contain} , and using iteration of {contain} to select and deselect, would be more efficient.

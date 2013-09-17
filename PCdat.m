@@ -120,7 +120,7 @@ classdef PCdat
             
         end
     end
-    methods (Static)
+    methods (Static) %static is use for the method before creating an instance of a class, cal value to build an object
         function [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
                 = sint_3_4_extract (file)
 %              [w, N_Ai, N_Di, OC, mode, ohmsq, t, vpc, vref, dN, tau, voc, suns, a, b, c, vdark, gref]...
