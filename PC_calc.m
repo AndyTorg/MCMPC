@@ -55,7 +55,8 @@ classdef PC_calc < Si
             
             cond = (vpc-Coff).^2*A + (vpc-Coff)*B - (vdark-Coff).^2*A - (vdark-Coff)*B;
         end  
-        function [suns, gen] = generation(vref, vref_to_suns, OC)
+        function [suns, gen] = generation(vref, vref_to_suns, OC, width)
+%             [suns, gen] = generation(vref, vref_to_suns, OC, width)
             %function j0_o = gen_cal(j0_i)
             %Andrew Thomson v2 17/05/12
             %Function calculates generation for generalised or qss tau calculations
@@ -63,91 +64,100 @@ classdef PC_calc < Si
             %calculate suns from reference cell
             suns = vref ./ vref_to_suns;
             %assuming an optical reference of 0.038 mA
-            gen = suns*0.038*OC/Si.q;
+            gen = suns*0.038*OC/Si.q/width;
 
         end
         function dN = carriers(cond, width, N_A, N_D, mu_mode)
+%             dN = carriers(cond, width, N_A, N_D, mu_mode)
             mu_s = Si.mobility_sum(1, N_A, N_D, 298, mu_mode);
-            mu_s = ones(MCM_calc.rows(cond),1)*mu_s; % expand mu_sum so that it is the same size as the conductivity vector
+            mu_s = ones(length(cond),1)*mu_s; % expand mu_sum so that it is the same size as the conductivity vector
             %NOTE you should code in  a convergece test and perhaps reduce calc time. 
             %This is a newton method approximation.
 %             [~, N_At, N_Dt] = MCM_calc.pad_arrays(cond, N_A, N_D);
             for i = 1:10
-                dN = cond ./((ones(MCM_calc.rows(cond),1)*width) * Si.q .* mu_s);
+                dN = cond ./(width * Si.q .* mu_s);
                 %a = j0.dN;    
                 mu_s = Si.mobility_sum(dN, N_A, N_D, 298, mu_mode);
             end
         end
         
-        function obj = lifetime(obj, PC_settings)
+        function tau = lifetime(time, dN, Gen, mode)
+%             tau = lifetime(time, dN, Gen, mode)
 %             filtersettings
         fr = 5;
-           if strcmpi(PC_settings.pc_mode, 'PCD')   
+           if strcmpi(mode, 'PCD')   
 %                the following has inbuilt filtering that works well for in
 %                previous version
-                slope = zeros(size(obj.dN));
-                for i = 1:MCM_calc.cols(obj.time)
-                    timet = exp((log(min(obj.time(:,i))):(log(max(obj.time(:,i)))-log(min(obj.time(:,i))))/(MCM_calc.rows(obj.time)+10):log(max(obj.time(:,i)))));
-                    dNt = interp1(obj.time(:,i),obj.dN(:,i), timet, 'linear');
-                    obj.time(:,i) = timet(6:end-6)';
-                    obj.dN(:,i) = dNt(6:end-6)';    
-                    slope(:,i) = smoothDiff(obj.time(:,i), obj.dN(:,i), fr);
-                end
+%                Here the data is re-interoplated logarithmcally, this
+%                helps with preventing amplification of noise.
+                slope = zeros(size(dN));
+                
+                %interpolate time
+                %there is faffing around to sort out end points with
+                %regards to the filtering.
+                timet = exp((log(min(time)):(log(max(time))-log(min(time)))/(length(time)+10):log(max(time))));
+                dNt = interp1(time,dN, timet, 'linear');
+%                 time = timet(6:end-6)';
+%                 dN = dNt(6:end-6)';   
 
-
-                obj.tau = -obj.dN./(slope);
-            elseif strcmpi(PC_settings.pc_mode,'QSS')
-%                 j0.tau = j0.dN*j0.w./(j0.G);
-            elseif strcmpi(PC_settings.pc_mode, 'GEN')
+                slope = PC_calc.smoothDiff(timet(6:end-6)', dNt(6:end-6)', fr);
+                taut = -dNt(6:end-6)'./(slope);
+                tau = interp1(timet(6:end-6)',taut, time, 'linear');
+            elseif strcmpi(mode,'QSS')
+                error('Do not to qss mode any more use GEN')
+            elseif strcmpi(mode, 'GEN')
             
-                for i = 1:MCM_calc.cols(obj.time)
-                    timet = exp((log(min(obj.time(:,i))):(log(max(obj.time(:,i)))-log(min(obj.time(:,i))))/(MCM_calc.rows(obj.time(:,i))+10):log(max(obj.time(:,i)))));
-                    dN = interp1(obj.time(:,i),obj.dN(:,i), timet, 'linear');
-                    G = interp1(obj.time(:,i),obj.Gen(:,i), timet, 'linear');
-    % 
-    %                 % drop end in order to avoid nan
-                    timet = timet(6:end-6)';
-                    dN = dN(6:end-6)';
-                    G = G(6:end-6)';
-                    slope = gradient (dN, timet);
-    % 
-    %                 %  slope = gradient (obj.dN,obj.time);
-                    slope = fastsmooth(slope,5,3,1);
-    % 
-    % 
-    %                 % slope = slope %(6:end);
-                    obj.time(:,i) = timet;%(6:end);
-                    obj.dN(:,i) = dN;%(6:end);
-                    obj.Gen(:,i) = G;
-%                     slope = gradient (obj.dN, obj.time);
-                    obj.tau(:,i) = obj.dN(:,i)./(obj.Gen(:,i)/obj.width(:,i) - slope);
-                end
-%                 obj.tau = obj.dN./(obj.Gen/obj.width - slope);
+                timet = exp((log(min(time)):(log(max(time))-log(min(time)))/(length(time)+10):log(max(time))));
+                dNt = interp1(time,dN, timet, 'linear');
+                Gt = interp1(time,Gen, timet, 'linear');
+% 
+%                 % drop end in order to avoid nan
+                timet = timet(6:end-6)';
+                dNt = dNt(6:end-6)';
+                Gt = Gt(6:end-6)';
+                
+                
+                slope = gradient (dNt, timet);
+%                 NOT AN INBUILT MATLAB FUNCTION
+                slope = fastsmooth(slope,5,3,1);
+% 
+% 
+%                 % slope = slope %(6:end);
+                taut = dNt./(Gt - slope);
+                tau = interp1(timet,taut, time, 'linear');
+                
+%                 
            end
             
         end
-        function obj = inversetau (obj, PC_settings)
-            
+        function itau = inversetau (dN, tau, N_A, N_D, mode)
+%             itau = inversetau (dN, tau, N_A, N_D, mode)
             %remove auger recombination
-            obj.itau = 1./obj.tau- 1./Si.auger(obj.dN, obj.N_A, obj.N_D, PC_settings.auger_mode);
+            itau = 1./tau- 1./Si.auger(dN, N_A, N_D, mode);
 
         end
-        function obj = emittersat(obj)
-            slope = zeros (size(obj.itau));
-            for i = 1:MCM_calc.cols(obj.itau)
-                slope(:,i) = gradient (obj.itau(:,i), obj.dN(:,i));
-            end
+        function [j0e, tau_b] = emittersat(dN, itau, width, N_A, N_D)
+%             [j0e, tau_b] = emittersat(dN, itau, width, N_A, N_D)
+            slope = gradient(itau, dN);
+%             AN IN BUILT MATLAB FUNCTION
             slope = sgolayfilt(slope , 1, 25);
             
-            %makes the matrices all multiplyable 
-            [N_Dt, N_At, widtht , ~] = MCM_calc.pad_arrays (obj.N_D, obj.N_A, obj.width, slope); 
-            
-            Ndop_int = (obj.itau) + slope.*(-(N_At + N_Dt));
+            Ndop_int = (itau) + slope.*(-(N_A + N_D));
 
             %calculate the emitter and bulk recombinations
-            obj.j0e = slope .* widtht * Si.ni^2 * Si.q / 2;
-            obj.tau_b = 1./Ndop_int;
+            j0e = slope .* width * Si.ni^2 * Si.q / 2;
+            tau_b = 1./Ndop_int;
 
+        end
+        
+        function [dydx, x] = smoothDiff (x, y,fr)
+%           [dydx, x] = smoothDiff (x, y,fr)
+%             padds the vector for which the derivative will be taken
+            slope = gradient (y,x);
+            slope = [-max(abs(slope)).*ones(50,1)' slope'];
+            slope = fastsmooth(slope,fr,3,1); %(slope(end:-1:1)
+            dydx = slope(51:end)'; 
+        
         end
 %         function obj = emittersatReichel(obj, PC_settings, varargin)
 %             if nargin > 1

@@ -223,7 +223,7 @@ classdef Si
                  
             [n0, p0] = Si.equlib_carriers (Na, Nd);
 
-            [p0, n0, dN] = MCM_calc.pad_arrays (p0, n0, dN);
+%             [p0, n0, dN] = MCM_calc.pad_arrays (p0, n0, dN);
             
             p = p0 + dN;
             n = n0 + dN;
