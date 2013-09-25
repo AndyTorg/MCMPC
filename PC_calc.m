@@ -47,7 +47,8 @@ classdef PC_calc < Si
     %                 MC_delta_Cond = delta_Cond + randn(1).* muCond.* delta_Cond ./Cond;
                cond(:,i) = MC_delta_Cond;
            end
-        end
+         end
+        
         function cond = conductivityOFF(vpc, vdark, A, B, Coff)
 %     cond = conductivityOFF(vpc, A, B, coff)
 %     calculates the conductivity for the newer version of the SSS
@@ -55,6 +56,7 @@ classdef PC_calc < Si
             
             cond = (vpc-Coff).^2*A + (vpc-Coff)*B - (vdark-Coff).^2*A - (vdark-Coff)*B;
         end  
+        
         function [suns, gen] = generation(vref, vref_to_suns, OC, width)
 %             [suns, gen] = generation(vref, vref_to_suns, OC, width)
             %function j0_o = gen_cal(j0_i)

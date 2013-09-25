@@ -22,7 +22,7 @@ function varargout = SolarGUI16092013(varargin)
 
 % Edit the above text to modify the response to help SolarGUI16092013
 
-% Last Modified by GUIDE v2.5 17-Sep-2013 09:51:29
+% Last Modified by GUIDE v2.5 26-Sep-2013 07:33:42
 
 % Begin initialization code - DO NOT EDIT
 
@@ -78,86 +78,126 @@ varargout{1} = handles.output;clc
 % --- Executes during object creation, after setting all properties.
 function figure1_CreateFcn(hObject, eventdata, handles)
 
-% hObject    handle to figure1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
 
-% --- Executes on button press in toggleSummary.
+
+
 function toggleSummary_Callback(hObject, eventdata, handles)
-haxes2 = axes('Parent', handles.uipanelPlot, ...
+deselection(handles)
+set(handles.toggleSummary,'value', 1)
+set(handles.toggleSummary,'BackgroundColor','w')
+clearPlot(handles.uipanelPlot)
+plotSuntoTime = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
-            'Position', [15.8 15.846 480.2 480.846]);
-        plot(haxes2, 1:200, sin((1:200)./12));
-% hObject    handle to toggleSummary (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+            'Position', [handles.xOffset handles.yOffset+handles.height/2 handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
+        
+plot(plotSuntoTime, handles.solar.time, handles.calc.suns );
+xlabel('Time/s')
+ylabel('Illumination/suns')
 
-% Hint: get(hObject,'Value') returns toggle state of toggleSummary
+%%%%
+plotAugettodN = axes('Parent', handles.uipanelPlot, ...
+            'Units', 'pixels', ...
+            'Position', [2*handles.xOffset+handles.width/2 handles.yOffset+handles.height/2 handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
+        
+plot(plotAugettodN, handles.calc.dN, handles.calc.itau );
+xlabel('Minority Carrier/cm^-^3')
+ylabel('Inverse Lifetime - Auger Term(s^-^1)')
+%%%
+plotSuntoVoc = axes('Parent', handles.uipanelPlot, ...
+            'Units', 'pixels', ...
+            'Position', [handles.xOffset handles.yOffset handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
+        
+%plot(plotSuntoVoc, handles.calc.dN, handles.calc.suns );
+xlabel('Implied Open Circuit Voltage/v')
+ylabel('Illumination/suns')
+%%%%
+plotTautodN = axes('Parent', handles.uipanelPlot, ...
+            'Units', 'pixels', ...
+            'Position', [2*handles.xOffset+handles.width/2 handles.yOffset handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
+        
+plot(plotTautodN, handles.calc.dN, handles.calc.tau );
+xlabel('Minority Carrier/cm^-^3')
+ylabel('Minority Carrier Lifetime/s')
 
 
-% --- Executes on button press in toggleJoeEffective.
+
 function toggleJoeEffective_Callback(hObject, eventdata, handles)
-haxes2 = axes('Parent', handles.uipanelPlot, ...
+deselection(handles)
+set(handles.toggleJoeEffective,'value', 1)
+set(handles.toggleJoeEffective,'BackgroundColor','w')
+clearPlot(handles.uipanelPlot)
+plotJoeEffective = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
-            'Position', [300.8 15.846 480.2 480.846]);
-        plot(haxes2, 1:200, cos((1:200)./12));
-% hObject    handle to toggleJoeEffective (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
+        
+%plot(plotJoeEffective, handles.calc.dN, handles.calc.tau_b );
+xlabel('Minority Carrier/unit')
+ylabel('Joe_e_f_f /s')
 
-% Hint: get(hObject,'Value') returns toggle state of toggleJoeEffective
 
 
 % --- Executes on button press in toggleTauBulk.
 function toggleTauBulk_Callback(hObject, eventdata, handles)
-% plotTauBulk = axes('Parent', handles.uipanelPlot, ...
-%             'Units', 'pixels', ...
-%             'Position', [30 20 1150 580]);
-%plot(plotTauBulk, handles.solar.time, handles.solar.vpc);  
+deselection(handles)
+set(handles.toggleTauBulk,'value', 1)
+set(handles.toggleTauBulk,'BackgroundColor','w')
+clearPlot(handles.uipanelPlot)
+plotTauBulk = axes('Parent', handles.uipanelPlot, ...
+            'Units', 'pixels', ...
+            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
+        
+plot(plotTauBulk, handles.calc.dN, handles.calc.tau_b );
+xlabel('Minority Carrier/unit')
+ylabel('Tau_b_u_l_k /s')
 
-% Hint: get(hObject,'Value') returns toggle state of toggleTauBulk
-
-
-% --- Executes on button press in toggleRawData.
+%add data selection later
 function toggleRawData_Callback(hObject, eventdata, handles)
+deselection(handles)
+set(handles.toggleRawData,'value', 1)
 set(handles.toggleRawData,'BackgroundColor','w')
-
 clearPlot(handles.uipanelPlot)
 plotRaw = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
-            'Position', [30 20 1150 580]);
-plot(plotRaw, handles.solar.time, handles.solar.vpc);  
+            'Position', [handles.xOffset handles.yOffset handles.width handles.height]);
+plot(plotRaw, handles.solar.time, handles.solar.vpc); 
+xlabel('time/s')
+ylabel('photovoltage/v')
 
-
-
-% --- Executes on button press in toggleTauEffective.
 function toggleTauEffective_Callback(hObject, eventdata, handles)
+deselection(handles)
+set(handles.toggleTauEffective,'value', 1)
+set(handles.toggleTauEffective,'BackgroundColor','w')
 clearPlot(handles.uipanelPlot)
 plotTauEffective = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
-            'Position', [30 20 1150 580]);
+            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
         
-plot(plotTauEffective,handles.solar.tau, handles.solar.dN);  
+plot(plotTauEffective, handles.calc.dN, handles.calc.tau );
+xlabel('Minority Carrier/unit')
+ylabel('Tau_e_f_f /s')
 
-% --- Executes on button press in toggleJoeSRV.
 function toggleJoeSRV_Callback(hObject, eventdata, handles)
-% hObject    handle to toggleJoeSRV (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+deselection(handles)
+set(handles.toggleJoeSRV,'value', 1)
+set(handles.toggleJoeSRV,'BackgroundColor','w')
+clearPlot(handles.uipanelPlot)
+plotJoeSRV = axes('Parent', handles.uipanelPlot, ...
+            'Units', 'pixels', ...
+            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
+        
+plot(plotJoeSRV, handles.calc.j0e, handles.calc.itau );
+xlabel('j0e')
+ylabel('itau')
 
-% Hint: get(hObject,'Value') returns toggle state of toggleJoeSRV
-
-
-% --- Executes on button press in btnImportData.
 function btnImportData_Callback(hObject, eventdata, handles)
-% hObject    handle to btnImportData (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 solar = PCdat
 solar = getxlsm(solar)
-handles.solar = solar;% pass obj solar data to the GUI handles, so callback can share data
-guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
+handles.xOffset = 55;
+handles.yOffset = 45;
+handles.width = 1130;
+handles.height = 550;
+
 set(handles.editBhatA,'string',solar.a)
 set(handles.editBhatB,'string',solar.b)
 set(handles.editBhatC,'string',solar.c)
@@ -166,6 +206,30 @@ set(handles.editOpticalConst,'string',solar.OC)
 set(handles.editWidth,'string',solar.width)
 set(handles.btnImportData,'enable','off')
 set(handles.btnClearAll,'enable','on')
+
+calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c)
+list=get(handles.comboBoxMuSetting,'String');
+val=get(handles.comboBoxMuSetting,'Value');
+mu_mode = list{val}
+calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, mu_mode)
+%using gref for vref_to_sun???
+[calc.suns, calc.gen] = PC_calc.generation(solar.vref, solar.gref, solar.OC, solar.width)
+list=get(handles.comboBoxTauSetting,'String');
+val=get(handles.comboBoxTauSetting,'Value');
+mode = list{val}
+calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, mode)
+list=get(handles.comboBoxAugerSetting,'String');
+val=get(handles.comboBoxAugerSetting,'Value');
+mode = list{val}
+calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, mode)
+
+[calc.j0e, calc.tau_b] = PC_calc.emittersat(calc.dN, calc.itau, solar.width, solar.N_A, solar.N_D)
+% itau = SRV??
+
+handles.calc = calc;
+guidata(hObject, handles);
+handles.solar = solar;% pass obj solar data to the GUI handles, so callback can share data
+guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
 toggleRawData_Callback(hObject, eventdata, handles)
 
 
@@ -500,4 +564,88 @@ if ~isempty(ah)
 end
 
 
+
+
+
+% --- Executes on selection change in comboBoxTauSetting.
+function comboBoxTauSetting_Callback(hObject, eventdata, handles)
+% hObject    handle to comboBoxTauSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns comboBoxTauSetting contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from comboBoxTauSetting
+
+
+% --- Executes during object creation, after setting all properties.
+function comboBoxTauSetting_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to comboBoxTauSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in comboBoxMuSetting.
+function comboBoxMuSetting_Callback(hObject, eventdata, handles)
+% hObject    handle to comboBoxMuSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns comboBoxMuSetting contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from comboBoxMuSetting
+
+
+% --- Executes during object creation, after setting all properties.
+function comboBoxMuSetting_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to comboBoxMuSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in comboBoxAugerSetting.
+function comboBoxAugerSetting_Callback(hObject, eventdata, handles)
+% hObject    handle to comboBoxAugerSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns comboBoxAugerSetting contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from comboBoxAugerSetting
+
+
+% --- Executes during object creation, after setting all properties.
+function comboBoxAugerSetting_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to comboBoxAugerSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function deselection(handles)
+set(handles.toggleSummary,'BackgroundColor', [1 1 1]*0.9)
+set(handles.toggleSummary,'value', 0)
+set(handles.toggleRawData,'BackgroundColor',0.9*[1 1 1])
+set(handles.toggleRawData,'value', 0)
+set(handles.toggleTauEffective,'BackgroundColor',0.9*[1 1 1])
+set(handles.toggleTauEffective,'value', 0)
+set(handles.toggleJoeSRV,'BackgroundColor',0.9*[1 1 1])
+set(handles.toggleJoeSRV,'value', 0)
+set(handles.toggleTauBulk,'BackgroundColor',0.9*[1 1 1])
+set(handles.toggleTauBulk,'value', 0)
+set(handles.toggleJoeEffective,'BackgroundColor',0.9*[1 1 1])
+set(handles.toggleJoeEffective,'value', 0)
 

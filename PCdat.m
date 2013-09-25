@@ -49,13 +49,13 @@ classdef PCdat
 %               obj = PCdat('path')           will use the window thingo
 %               obj = PCdat('path', 'name')
             if nargin < 1
-                [obj.file,obj.path] =  uigetfile({'*.xls'; '*.xlsx'; '*.xlsm'}, 'Choose a Sinton SS','MultiSelect','on');
+                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xlsx'; '*.xls'}, 'Choose a Sinton SS','MultiSelect','on');
             elseif nargin == 1
 %               starts the folder poingening from and initial sub folder,
 %               less clicks hopefully. 
                 curdir = cd;
                 cd (varargin{1})
-                [obj.file,obj.path] =  uigetfile({'*.xls'; '*.xlsx'; '*.xlsm'}, 'Choose a Sinton SS','MultiSelect','on');
+                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xlsx'; '*.xls'}, 'Choose a Sinton SS','MultiSelect','on');
                 cd (curdir)
             elseif nargin == 2
                 obj.path = varargin{1};
