@@ -22,7 +22,7 @@ function varargout = SolarGUI16092013(varargin)
 
 % Edit the above text to modify the response to help SolarGUI16092013
 
-% Last Modified by GUIDE v2.5 26-Sep-2013 07:33:42
+% Last Modified by GUIDE v2.5 26-Sep-2013 23:08:23
 
 % Begin initialization code - DO NOT EDIT
 
@@ -57,6 +57,8 @@ function SolarGUI16092013_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 set(handles.btnExportData,'enable','off')
 set(handles.btnClearAll,'enable','off')
+set(findall(handles.uipanelGraph, '-property', 'enable'), 'enable', 'off')
+set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
 % Update handles structure
 guidata(hObject, handles);
 
@@ -92,8 +94,8 @@ plotSuntoTime = axes('Parent', handles.uipanelPlot, ...
             'Position', [handles.xOffset handles.yOffset+handles.height/2 handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
         
 plot(plotSuntoTime, handles.solar.time, handles.calc.suns );
-xlabel('Time/s')
-ylabel('Illumination/suns')
+xlabel('Time(seconds)')
+ylabel('Illumination(suns)')
 
 %%%%
 plotAugettodN = axes('Parent', handles.uipanelPlot, ...
@@ -101,8 +103,8 @@ plotAugettodN = axes('Parent', handles.uipanelPlot, ...
             'Position', [2*handles.xOffset+handles.width/2 handles.yOffset+handles.height/2 handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
         
 plot(plotAugettodN, handles.calc.dN, handles.calc.itau );
-xlabel('Minority Carrier/cm^-^3')
-ylabel('Inverse Lifetime - Auger Term(s^-^1)')
+xlabel('Minority Carrier,\Deltan(cm^{-3})')
+ylabel('Inverse Lifetime - Auger Term(s^{-1})')
 %%%
 plotSuntoVoc = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
@@ -206,7 +208,7 @@ set(handles.editOpticalConst,'string',solar.OC)
 set(handles.editWidth,'string',solar.width)
 set(handles.btnImportData,'enable','off')
 set(handles.btnClearAll,'enable','on')
-
+% all are calculation, going to consolidate into one function
 calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c)
 list=get(handles.comboBoxMuSetting,'String');
 val=get(handles.comboBoxMuSetting,'Value');
@@ -283,7 +285,7 @@ function editWidth_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 width = str2double(get(hObject,'String'))
-set(handles.labelTest,'string','width')
+
 
 % Hints: get(hObject,'String') returns contents of editWidth as text
 %        str2double(get(hObject,'String')) returns contents of editWidth as a double
@@ -304,10 +306,7 @@ end
 
 
 function editWidthError_Callback(hObject, eventdata, handles)
-% hObject    handle to editWidthError (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
+a= 'change edit'
 % Hints: get(hObject,'String') returns contents of editWidthError as text
 %        str2double(get(hObject,'String')) returns contents of editWidthError as a double
 
@@ -428,10 +427,7 @@ end
 
 % --- Executes on selection change in comboBoxBulkType.
 function comboBoxBulkType_Callback(hObject, eventdata, handles)
-% hObject    handle to comboBoxBulkType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
+%freeze either Nd or Na when after select type
 % Hints: contents = cellstr(get(hObject,'String')) returns comboBoxBulkType contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from comboBoxBulkType
 
@@ -635,6 +631,51 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+
+function edit1Nd_Callback(hObject, eventdata, handles)
+% hObject    handle to edit1Nd (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit1Nd as text
+%        str2double(get(hObject,'String')) returns contents of edit1Nd as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit1Nd_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit1Nd (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function editNa_Callback(hObject, eventdata, handles)
+% hObject    handle to editNa (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editNa as text
+%        str2double(get(hObject,'String')) returns contents of editNa as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editNa_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editNa (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 function deselection(handles)
 set(handles.toggleSummary,'BackgroundColor', [1 1 1]*0.9)
 set(handles.toggleSummary,'value', 0)
@@ -649,3 +690,37 @@ set(handles.toggleTauBulk,'value', 0)
 set(handles.toggleJoeEffective,'BackgroundColor',0.9*[1 1 1])
 set(handles.toggleJoeEffective,'value', 0)
 
+function recalc(handles, variables)
+% case
+% 0 for combobox
+%width
+% OC
+% dark voltage
+% Nd
+% Na
+   
+    
+
+calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c)
+list=get(handles.comboBoxMuSetting,'String');
+val=get(handles.comboBoxMuSetting,'Value');
+mu_mode = list{val}
+calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, mu_mode)
+%using gref for vref_to_sun???
+[calc.suns, calc.gen] = PC_calc.generation(solar.vref, solar.gref, solar.OC, solar.width)
+list=get(handles.comboBoxTauSetting,'String');
+val=get(handles.comboBoxTauSetting,'Value');
+mode = list{val}
+calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, mode)
+list=get(handles.comboBoxAugerSetting,'String');
+val=get(handles.comboBoxAugerSetting,'Value');
+mode = list{val}
+calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, mode)
+
+[calc.j0e, calc.tau_b] = PC_calc.emittersat(calc.dN, calc.itau, solar.width, solar.N_A, solar.N_D)
+% itau = SRV??
+
+handles.calc = calc;
+guidata(hObject, handles);
+handles.solar = solar;% pass obj solar data to the GUI handles, so callback can share data
+guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
