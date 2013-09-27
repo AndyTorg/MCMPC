@@ -76,13 +76,71 @@ function varargout = SolarGUI16092013_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;clc
 
-
-% --- Executes during object creation, after setting all properties.
 function figure1_CreateFcn(hObject, eventdata, handles)
+%add data slection
+function btnImportData_Callback(hObject, eventdata, handles)
+solar = PCdat
+solar = getxlsm(solar)
+handles.xOffset = 55;
+handles.yOffset = 45;
+handles.width = 1130;
+handles.height = 550;
 
+set(handles.editBhatA,'string',solar.a)
+set(handles.editBhatB,'string',solar.b)
+set(handles.editBhatC,'string',solar.c)
+set(handles.editDarkVoltage,'string',solar.vdark)
+set(handles.editOpticalConst,'string',solar.OC)
+set(handles.editWidth,'string',solar.width)
+set(handles.btnImportData,'enable','off')
+set(handles.btnClearAll,'enable','on')
+% all are calculation, going to consolidate into one function
+calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c)
+list=get(handles.comboBoxMuSetting,'String');
+val=get(handles.comboBoxMuSetting,'Value');
+mu_mode = list{val}
+calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, mu_mode)
+%using gref for vref_to_sun???
+[calc.suns, calc.gen] = PC_calc.generation(solar.vref, solar.gref, solar.OC, solar.width)
+list=get(handles.comboBoxTauSetting,'String');
+val=get(handles.comboBoxTauSetting,'Value');
+mode = list{val}
+calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, mode)
+list=get(handles.comboBoxAugerSetting,'String');
+val=get(handles.comboBoxAugerSetting,'Value');
+mode = list{val}
+calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, mode)
 
+[calc.j0e, calc.tau_b] = PC_calc.emittersat(calc.dN, calc.itau, solar.width, solar.N_A, solar.N_D)
+% itau = SRV??
 
+handles.calc = calc;
+guidata(hObject, handles);
+handles.solar = solar;% pass obj solar data to the GUI handles, so callback can share data
+guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
+toggleRawData_Callback(hObject, eventdata, handles)
+set(handles.btnExportData,'enable','on')
+set(handles.btnClearAll,'enable','on')
+set(findall(handles.uipanelGraph, '-property', 'enable'), 'enable', 'on')
+set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'on')
+set(handles.btnExportData,'enable','on')
 
+function btnClearAll_Callback(hObject, eventdata, handles)
+set(handles.btnExportData,'enable','off')
+set(handles.btnImportData,'enable','on')
+deselection(handles)
+set(findall(handles.uipanelGraph, '-property', 'enable'), 'enable', 'off')
+set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
+set(findall(handles.uipanelControl, '-property', 'enable'), 'visible', 'off')
+handles.calc = 0;
+handles.solar = 0;
+clearplot = plot(0,0);
+
+% --- Executes on button press in btnExportData.
+function btnExportData_Callback(hObject, eventdata, handles)
+% hObject    handle to btnExportData (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
 function toggleSummary_Callback(hObject, eventdata, handles)
 deselection(handles)
@@ -192,84 +250,6 @@ plot(plotJoeSRV, handles.calc.j0e, handles.calc.itau );
 xlabel('j0e')
 ylabel('itau')
 
-function btnImportData_Callback(hObject, eventdata, handles)
-solar = PCdat
-solar = getxlsm(solar)
-handles.xOffset = 55;
-handles.yOffset = 45;
-handles.width = 1130;
-handles.height = 550;
-
-set(handles.editBhatA,'string',solar.a)
-set(handles.editBhatB,'string',solar.b)
-set(handles.editBhatC,'string',solar.c)
-set(handles.editDarkVoltage,'string',solar.vdark)
-set(handles.editOpticalConst,'string',solar.OC)
-set(handles.editWidth,'string',solar.width)
-set(handles.btnImportData,'enable','off')
-set(handles.btnClearAll,'enable','on')
-% all are calculation, going to consolidate into one function
-calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c)
-list=get(handles.comboBoxMuSetting,'String');
-val=get(handles.comboBoxMuSetting,'Value');
-mu_mode = list{val}
-calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, mu_mode)
-%using gref for vref_to_sun???
-[calc.suns, calc.gen] = PC_calc.generation(solar.vref, solar.gref, solar.OC, solar.width)
-list=get(handles.comboBoxTauSetting,'String');
-val=get(handles.comboBoxTauSetting,'Value');
-mode = list{val}
-calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, mode)
-list=get(handles.comboBoxAugerSetting,'String');
-val=get(handles.comboBoxAugerSetting,'Value');
-mode = list{val}
-calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, mode)
-
-[calc.j0e, calc.tau_b] = PC_calc.emittersat(calc.dN, calc.itau, solar.width, solar.N_A, solar.N_D)
-% itau = SRV??
-
-handles.calc = calc;
-guidata(hObject, handles);
-handles.solar = solar;% pass obj solar data to the GUI handles, so callback can share data
-guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
-toggleRawData_Callback(hObject, eventdata, handles)
-
-
-
-
-% --- Executes on button press in btnClearAll.
-function btnClearAll_Callback(hObject, eventdata, handles)
-set(handles.btnExportData,'enable','off')
-% hObject    handle to btnClearAll (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in btnExportData.
-function btnExportData_Callback(hObject, eventdata, handles)
-% hObject    handle to btnExportData (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in btnTest.
-function btnTest_Callback(hObject, eventdata, handles)
-%uiopen('matlab') 
- [filename, pathname, filterindex] = uigetfile('*.*', 'Pick a MATLAB code file');
- filename
- pathname
- filterindex
- whos 
- if filterindex == 1
-    path = [ pathname filename ];
-    [status,sheets,xlFormat] = xlsfinfo(path) 
-    length(sheets)
- end
-% hObject    handle to btnTest (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --- Executes on button press in checkbox1.
 function checkbox1_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox1 (see GCBO)
@@ -277,8 +257,6 @@ function checkbox1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox1
-
-
 
 function editWidth_Callback(hObject, eventdata, handles)
 % hObject    handle to editWidth (see GCBO)
