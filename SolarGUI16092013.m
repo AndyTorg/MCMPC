@@ -98,18 +98,21 @@ set(handles.btnClearAll,'enable','on')
 calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c)
 list=get(handles.comboBoxMuSetting,'String');
 val=get(handles.comboBoxMuSetting,'Value');
-mu_mode = list{val}
-calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, mu_mode)
+handles.mu_mode = list{val}
+guidata(hObject, handles);
+calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, handles.mu_mode)
 %using gref for vref_to_sun???
 [calc.suns, calc.gen] = PC_calc.generation(solar.vref, solar.gref, solar.OC, solar.width)
 list=get(handles.comboBoxTauSetting,'String');
 val=get(handles.comboBoxTauSetting,'Value');
-mode = list{val}
-calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, mode)
+handles.tau_mode = list{val}
+guidata(hObject, handles);
+calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, handles.tau_mode)
 list=get(handles.comboBoxAugerSetting,'String');
 val=get(handles.comboBoxAugerSetting,'Value');
-mode = list{val}
-calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, mode)
+handles.auger_mode = list{val}
+guidata(hObject, handles);
+calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, handles.auger_mode)
 
 [calc.j0e, calc.tau_b] = PC_calc.emittersat(calc.dN, calc.itau, solar.width, solar.N_A, solar.N_D)
 % itau = SRV??
@@ -136,11 +139,23 @@ handles.calc = 0;
 handles.solar = 0;
 clearplot = plot(0,0);
 
-% --- Executes on button press in btnExportData.
 function btnExportData_Callback(hObject, eventdata, handles)
-% hObject    handle to btnExportData (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+title = {  handles.mu_mode handles.tau_mode handles.auger_mode }
+output = xlswrite('CalcData',title)
+
+tabs = {'Time' 'Conductivity' 'Minority Carrier' 'Suns' 'Gen' 'Effective Lifetime' 'itau' 'J0e' 't_bulk'}
+[ rows columms ] = size(tabs)
+temp = 'A' + columms - 1;
+range = sprintf('A2:%c2', temp)
+output = xlswrite('CalcData',tabs,range)
+% %method failed, value[] will create NaN in excel
+% values = [handles.solar.time handles.calc.cond handles.calc.dN handles.calc.suns handles.calc.gen handles.calc.tau handles.calc.itau handles.calc.j0e handles.calc.tau_b]
+% [ rows columms ] = size(values)
+% temp = 'A' + columms - 1;
+% range = sprintf('A3:%c3', temp)
+% output = xlswrite('CalcData',values)
+
+
 
 function toggleSummary_Callback(hObject, eventdata, handles)
 deselection(handles)
