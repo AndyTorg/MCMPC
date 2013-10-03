@@ -22,7 +22,7 @@ function varargout = SolarGUI16092013(varargin)
 
 % Edit the above text to modify the response to help SolarGUI16092013
 
-% Last Modified by GUIDE v2.5 01-Oct-2013 01:30:24
+% Last Modified by GUIDE v2.5 04-Oct-2013 07:47:37
 
 % Begin initialization code - DO NOT EDIT
 
@@ -662,3 +662,10 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+
+
+% --- Executes when figure1 is resized.
+function figure1_ResizeFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
