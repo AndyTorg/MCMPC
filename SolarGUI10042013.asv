@@ -87,14 +87,14 @@ handles.width = 1110;
 handles.height = 550;
 
 figure 
-plotyy(solar.time, solar.vpc, solar.time, solar.vref); 
-% axes(haxes(1))
+[haxes,line1,line2] =plotyy(solar.time, solar.vpc, solar.time, handles.solar.vref); 
+axes(haxes(1))
 xlabel('time(seconds)')
-ylabel('Photovoltage|Reference voltage(volts)')
-% axes(haxes(2))
-% xlabel('time(seconds)')
-% ylabel('Reference Voltage(volts)')
-% set(line2,'LineStyle','--')
+ylabel('Photovoltage(volts)')
+axes(haxes(2))
+xlabel('time(seconds)')
+ylabel('Reference Voltage(volts)')
+set(line2,'LineStyle','--')
 solar = solar.TTrangesel (solar)
 close gcf
 

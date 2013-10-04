@@ -49,13 +49,13 @@ classdef PCdat
 %               obj = PCdat('path')           will use the window thingo
 %               obj = PCdat('path', 'name')
             if nargin < 1
-                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xlsx'; '*.xls'}, 'Choose a Sinton SS','MultiSelect','on');
+                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
             elseif nargin == 1
 %               starts the folder poingening from and initial sub folder,
 %               less clicks hopefully. 
                 curdir = cd;
                 cd (varargin{1})
-                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xlsx'; '*.xls'}, 'Choose a Sinton SS','MultiSelect','on');
+                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
                 cd (curdir)
             elseif nargin == 2
                 obj.path = varargin{1};
@@ -106,14 +106,14 @@ classdef PCdat
 %             obj = TTrangesel (obj, varargin)
 %             Tau time range select. Here we select the data form the tau
 %             time plot
-            clf
-            plot (obj.time, obj.vref, 'xr')
-            hold on
+%             clf
+%             plot (obj.time, obj.vref, 'xr')
+%             hold on
             [x,y,index] = PCdat.rangesel(obj.time, obj.vpc)              
-            hold off
-            obj = PCdat.objRangeSel(obj,index{1})
+%             hold off
+            obj = PCdat.objRangeSel(obj,index)
             clf
-            plot (obj.time, [obj.vpc, obj.vref], '+')
+%             plotyy (obj.time, [obj.vpc, obj.vref], '+')
             
         end
         function obj = measrange(obj)
@@ -222,7 +222,8 @@ classdef PCdat
 %             [x,y] = rangesel (xaxis, yaxis, varargin)
 % Function to interface with the wonderful select data gui interface
 % varargin can be loglog, semilogx, semilogy or plot. default plot is plot
-            if nargin == 3
+% with no input argument it is assumed the plot has already been made
+        if nargin == 3
                 if strcmpi(varargin{1}, 'loglog')
                     loglog(xaxis, yaxis, '+');
                 elseif strcmpi(varargin{1}, 'semilogx')
@@ -232,9 +233,9 @@ classdef PCdat
                 elseif strcmpi(varargin{1}, 'plot')
                     plot(xaxis, yaxis, '+');
                 end
-            elseif nargin == 2
-                plot(xaxis, yaxis, '+');
-            end
+%             elseif nargin == 2
+%                 plot(xaxis, yaxis, '+');
+           end
             
             [index,x,y] = selectdata ( 'SelectionMode', 'Rect','Verify', 'on');
             
