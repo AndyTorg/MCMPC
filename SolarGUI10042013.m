@@ -321,7 +321,8 @@ function checkbox1_Callback(hObject, eventdata, handles)
 
 function editWidth_Callback(hObject, eventdata, handles)
 handles.solar.width = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+
 
 
 function editResistivity_Callback(hObject, eventdata, handles)
@@ -355,7 +356,7 @@ function checkboxWidthArray_Callback(hObject, eventdata, handles)
 function editOpticalConst_Callback(hObject, eventdata, handles)
 handles.solar.OC = str2double(get(hObject,'String'));
 
-recalc( handles );
+recalc( hObject, handles );
 
 
 function editOpticalConst_CreateFcn(hObject, eventdata, handles)
@@ -413,20 +414,20 @@ function comboBoxBulkType_Callback(hObject, eventdata, handles)
  
 function editDarkVoltage_Callback(hObject, eventdata, handles)
 handles.solar.vdark = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
 
 function editBhatA_Callback(hObject, eventdata, handles)
 handles.solar.a = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
 
 function editBhatB_Callback(hObject, eventdata, handles)
 handles.solar.b = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
 
 
 function editBhatC_Callback(hObject, eventdata, handles)
 handles.solar.c = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
 
 % --- Executes on button press in checkboxVCalibration.
 function checkboxVCalibration_Callback(hObject, eventdata, handles)
@@ -452,24 +453,24 @@ end
 
 % --- Executes on selection change in comboBoxTauSetting.
 function comboBoxTauSetting_Callback(hObject, eventdata, handles)
-recalc( handles );
+recalc( hObject, handles );
 
 % --- Executes on selection change in comboBoxMuSetting.
 function comboBoxMuSetting_Callback(hObject, eventdata, handles)
-recalc( handles );
+recalc( hObject, handles );
 
 % --- Executes on selection change in comboBoxAugerSetting.
 function comboBoxAugerSetting_Callback(hObject, eventdata, handles)
-recalc( handles );
+recalc( hObject, handles );
 
 function editNd_Callback(hObject, eventdata, handles)
 handles.solar.N_D = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
 
 
 function editNa_Callback(hObject, eventdata, handles)
 handles.solar.N_A = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
 
 
 function deselection(handles)
@@ -486,7 +487,7 @@ set(handles.toggleTauBulk,'value', 0)
 set(handles.toggleJoeEffective,'BackgroundColor',0.9*[1 1 1])
 set(handles.toggleJoeEffective,'value', 0)
 
-function recalc(  handles )
+function recalc( hObject,  handles )
 handles.calc.cond = PC_calc.conductivityOFF(handles.solar.vpc, handles.solar.vdark, handles.solar.a, handles.solar.b, handles.solar.c);
 
 list=get(handles.comboBoxMuSetting,'String');
@@ -509,6 +510,7 @@ handles.calc.itau = PC_calc.inversetau (handles.calc.dN, handles.calc.tau, handl
 
 [handles.calc.j0e, handles.calc.tau_b] = PC_calc.emittersat(handles.calc.dN, handles.calc.itau, handles.solar.width, handles.solar.N_A, handles.solar.N_D);
 % itau = SRV??
+guidata(hObject, handles);
 
 %-----------------------rubbish area ---------------------------------
 
