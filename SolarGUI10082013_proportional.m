@@ -1,28 +1,28 @@
-function varargout = SolarGUI10042013(varargin)
-% SOLARGUI10042013 MATLAB code for SolarGUI10042013.fig
-%      SOLARGUI10042013, by itself, creates a new SOLARGUI10042013 or raises the existing
+function varargout = SolarGUI10082013_proportional(varargin)
+% SOLARGUI10082013_PROPORTIONAL MATLAB code for SolarGUI10082013_proportional.fig
+%      SOLARGUI10082013_PROPORTIONAL, by itself, creates a new SOLARGUI10082013_PROPORTIONAL or raises the existing
 %      singleton*.
 %
-%      H = SOLARGUI10042013 returns the handle to a new SOLARGUI10042013 or the handle to
+%      H = SOLARGUI10082013_PROPORTIONAL returns the handle to a new SOLARGUI10082013_PROPORTIONAL or the handle to
 %      the existing singleton*.
 %
-%      SOLARGUI10042013('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in SOLARGUI10042013.M with the given input arguments.
+%      SOLARGUI10082013_PROPORTIONAL('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in SOLARGUI10082013_PROPORTIONAL.M with the given input arguments.
 %
-%      SOLARGUI10042013('Property','Value',...) creates a new SOLARGUI10042013 or raises the
+%      SOLARGUI10082013_PROPORTIONAL('Property','Value',...) creates a new SOLARGUI10082013_PROPORTIONAL or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before SolarGUI10042013_OpeningFcn gets called.  An
+%      applied to the GUI before SolarGUI10082013_proportional_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to SolarGUI10042013_OpeningFcn via varargin.
+%      stop.  All inputs are passed to SolarGUI10082013_proportional_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help SolarGUI10042013
+% Edit the above text to modify the response to help SolarGUI10082013_proportional
 
-% Last Modified by GUIDE v2.5 04-Oct-2013 07:48:07
+% Last Modified by GUIDE v2.5 08-Oct-2013 09:08:54
 
 % Begin initialization code - DO NOT EDIT
 
@@ -30,8 +30,8 @@ function varargout = SolarGUI10042013(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @SolarGUI10042013_OpeningFcn, ...
-                   'gui_OutputFcn',  @SolarGUI10042013_OutputFcn, ...
+                   'gui_OpeningFcn', @SolarGUI10082013_proportional_OpeningFcn, ...
+                   'gui_OutputFcn',  @SolarGUI10082013_proportional_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -46,14 +46,14 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before SolarGUI10042013 is made visible.
-function SolarGUI10042013_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before SolarGUI10082013_proportional is made visible.
+function SolarGUI10082013_proportional_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to SolarGUI10042013 (see VARARGIN)
-% Choose default command line output for SolarGUI10042013
+% varargin   command line arguments to SolarGUI10082013_proportional (see VARARGIN)
+% Choose default command line output for SolarGUI10082013_proportional
 handles.output = hObject;
 set(handles.btnExportData,'enable','off')
 set(handles.btnClearAll,'enable','off')
@@ -62,12 +62,12 @@ set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes SolarGUI10042013 wait for user response (see UIRESUME)
+% UIWAIT makes SolarGUI10082013_proportional wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = SolarGUI10042013_OutputFcn(hObject, eventdata, handles) 
+function varargout = SolarGUI10082013_proportional_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -87,14 +87,14 @@ handles.width = 1110;
 handles.height = 550;
 
 figure 
-[haxes,line1,line2] =plotyy(solar.time, solar.vpc, solar.time, handles.solar.vref); 
-axes(haxes(1))
+plotyy(solar.time, solar.vpc, solar.time, solar.vref); 
+% axes(haxes(1))
 xlabel('time(seconds)')
-ylabel('Photovoltage(volts)')
-axes(haxes(2))
-xlabel('time(seconds)')
-ylabel('Reference Voltage(volts)')
-set(line2,'LineStyle','--')
+ylabel('Photovoltage|Reference voltage(volts)')
+% axes(haxes(2))
+% xlabel('time(seconds)')
+% ylabel('Reference Voltage(volts)')
+% set(line2,'LineStyle','--')
 solar = solar.TTrangesel (solar)
 close gcf
 
@@ -270,6 +270,8 @@ plotTauEffective = axes('Parent', handles.uipanelPlot, ...
 loglog(plotTauEffective, handles.calc.dN, handles.calc.tau );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Effective Lifetime, \tau_e_f_f (s^{-1})')
+xlim([10e10 10e16])
+
 
 function toggleJoeSRV_Callback(hObject, eventdata, handles)
 deselection(handles)
@@ -283,6 +285,8 @@ plotJoeSRV = axes('Parent', handles.uipanelPlot, ...
 loglog(plotJoeSRV, handles.calc.j0e, handles.calc.itau );
 xlabel('Emitter Saturation Current Density, j0e (Acm^{-2})')
 ylabel('Auger Lifetime, \tau_{Auger} (s^{-1})')
+xlim([10e-17 10e-9])
+
 
 function toggleTauBulk_Callback(hObject, eventdata, handles)
 deselection(handles)
@@ -296,6 +300,7 @@ plotTauBulk = axes('Parent', handles.uipanelPlot, ...
 loglog(plotTauBulk, handles.calc.dN, handles.calc.tau_b );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Bulk Lifetime\tau_{bulk} (s^{-1})')
+xlim([10e10 10e16])
 
 function toggleJoeEffective_Callback(hObject, eventdata, handles)
 deselection(handles)
@@ -309,6 +314,7 @@ plotJoeEffective = axes('Parent', handles.uipanelPlot, ...
 loglog(plotJoeEffective, handles.calc.dN, handles.calc.j0e );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Emitter Saturation Current Density, j0e (Acm^{-2})')
+xlim([10e10 10e16])
 
 
 % --- Executes on button press in checkbox1.
@@ -321,7 +327,10 @@ function checkbox1_Callback(hObject, eventdata, handles)
 
 function editWidth_Callback(hObject, eventdata, handles)
 handles.solar.width = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
+
+
 
 
 function editResistivity_Callback(hObject, eventdata, handles)
@@ -354,8 +363,8 @@ function checkboxWidthArray_Callback(hObject, eventdata, handles)
 
 function editOpticalConst_Callback(hObject, eventdata, handles)
 handles.solar.OC = str2double(get(hObject,'String'));
-
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 
 function editOpticalConst_CreateFcn(hObject, eventdata, handles)
@@ -409,24 +418,29 @@ function comboBoxBulkType_Callback(hObject, eventdata, handles)
     set(handles.editNd,'string',handles.solar.N_D)
     set(handles.editNa,'enable','off')
     set(handles.editNd,'enable','on')
- end
+  end
+ updatePlot(hObject, eventdata, handles);
  
 function editDarkVoltage_Callback(hObject, eventdata, handles)
 handles.solar.vdark = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 function editBhatA_Callback(hObject, eventdata, handles)
 handles.solar.a = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 function editBhatB_Callback(hObject, eventdata, handles)
 handles.solar.b = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 
 function editBhatC_Callback(hObject, eventdata, handles)
 handles.solar.c = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 % --- Executes on button press in checkboxVCalibration.
 function checkboxVCalibration_Callback(hObject, eventdata, handles)
@@ -452,24 +466,28 @@ end
 
 % --- Executes on selection change in comboBoxTauSetting.
 function comboBoxTauSetting_Callback(hObject, eventdata, handles)
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 % --- Executes on selection change in comboBoxMuSetting.
 function comboBoxMuSetting_Callback(hObject, eventdata, handles)
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 % --- Executes on selection change in comboBoxAugerSetting.
 function comboBoxAugerSetting_Callback(hObject, eventdata, handles)
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 function editNd_Callback(hObject, eventdata, handles)
 handles.solar.N_D = str2double(get(hObject,'String'));
-recalc( handles );
-
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 function editNa_Callback(hObject, eventdata, handles)
 handles.solar.N_A = str2double(get(hObject,'String'));
-recalc( handles );
+recalc( hObject, handles );
+updatePlot(hObject, eventdata, handles);
 
 
 function deselection(handles)
@@ -486,7 +504,7 @@ set(handles.toggleTauBulk,'value', 0)
 set(handles.toggleJoeEffective,'BackgroundColor',0.9*[1 1 1])
 set(handles.toggleJoeEffective,'value', 0)
 
-function recalc(  handles )
+function recalc( hObject,  handles )
 handles.calc.cond = PC_calc.conductivityOFF(handles.solar.vpc, handles.solar.vdark, handles.solar.a, handles.solar.b, handles.solar.c);
 
 list=get(handles.comboBoxMuSetting,'String');
@@ -509,6 +527,26 @@ handles.calc.itau = PC_calc.inversetau (handles.calc.dN, handles.calc.tau, handl
 
 [handles.calc.j0e, handles.calc.tau_b] = PC_calc.emittersat(handles.calc.dN, handles.calc.itau, handles.solar.width, handles.solar.N_A, handles.solar.N_D);
 % itau = SRV??
+guidata(hObject, handles);
+
+function updatePlot(hObject, eventdata, handles)
+a = get(handles.uipanelGraph, 'children')
+b = get(a,'value')
+c = find([b{1:length(b)}]==1)
+switch(c)
+    case 6
+        toggleSummary_Callback(hObject, eventdata, handles);
+    case 3
+        toggleRawData_Callback(hObject, eventdata, handles);
+    case 2
+        toggleTauEffective_Callback(hObject, eventdata, handles);
+    case 1 
+        toggleJoeSRV_Callback(hObject, eventdata, handles);
+    case 4
+        toggleTauBulk_Callback(hObject, eventdata, handles);
+    case 5
+        toggleJoeEffective_Callback(hObject, eventdata, handles);
+end
 
 %-----------------------rubbish area ---------------------------------
 
@@ -689,10 +727,3 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-% --- Executes when figure1 is resized.
-function figure1_ResizeFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
