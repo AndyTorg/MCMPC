@@ -22,12 +22,12 @@ function varargout = SolarGUI10082013_proportional(varargin)
 
 % Edit the above text to modify the response to help SolarGUI10082013_proportional
 
-% Last Modified by GUIDE v2.5 08-Oct-2013 09:08:54
+% Last Modified by GUIDE v2.5 09-Oct-2013 07:47:43
 
 % Begin initialization code - DO NOT EDIT
 
 
-gui_Singleton = 1;
+gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
                    'gui_OpeningFcn', @SolarGUI10082013_proportional_OpeningFcn, ...
@@ -93,8 +93,8 @@ end
 
 handles.xOffset = 70;
 handles.yOffset = 45;
-handles.width = 1110;
-handles.height = 550;
+handles.width = 1050;
+handles.height = 500;
 
 figure 
 plotyy(solar.time, solar.vpc, solar.time, solar.vref); 
