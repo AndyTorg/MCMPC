@@ -80,7 +80,16 @@ function figure1_CreateFcn(hObject, eventdata, handles)
 %add data slection
 function btnImportData_Callback(hObject, eventdata, handles)
 solar = PCdat;
-solar = getxlsm(solar)
+switch(solar.index)
+    case 1
+        solar = getxlsm(solar)
+    case 2
+        solar = getxls(solar)
+    case 3
+        solar = getxlsx(solar)
+    otherwise
+end
+
 handles.xOffset = 70;
 handles.yOffset = 45;
 handles.width = 1110;

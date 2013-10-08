@@ -18,7 +18,7 @@ classdef PCdat
         vpc         % (V) vpc for this specific MCM sim may include uncertainty
         vref        % (V) vref for this specific MCM sim may include uncertainty
         vdark
-        
+        index
         %             SAMPLE PARAS
         width       % (cm) the quasi-neutral region often estimated by the total thickness of the sample
         N_A         % (/cm3) the concentration of acceptors in the quasi-neutal region
@@ -49,13 +49,13 @@ classdef PCdat
 %               obj = PCdat('path')           will use the window thingo
 %               obj = PCdat('path', 'name')
             if nargin < 1
-                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
+                [obj.file,obj.path obj.index] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
             elseif nargin == 1
 %               starts the folder poingening from and initial sub folder,
 %               less clicks hopefully. 
                 curdir = cd;
                 cd (varargin{1})
-                [obj.file,obj.path] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
+                [obj.file,obj.path obj.index] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
                 cd (curdir)
             elseif nargin == 2
                 obj.path = varargin{1};
