@@ -47,7 +47,7 @@ end
 
 
 % --- Executes just before SolarGUI10092013_proportional is made visible.
-function SolarGUI10092013_proportional_OpeningFcn(hObject, eventdata, handles, varargin)
+function SolarGUI10092013_proportional_OpeningFcn(hObject, ~, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -67,7 +67,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = SolarGUI10092013_proportional_OutputFcn(hObject, eventdata, handles) 
+function varargout = SolarGUI10092013_proportional_OutputFcn(~, ~, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -76,7 +76,6 @@ function varargout = SolarGUI10092013_proportional_OutputFcn(hObject, eventdata,
 % Get default command line output from handles structure
 varargout{1} = handles.output;clc
 
-function figure1_CreateFcn(hObject, eventdata, handles)
 %add data slection
 function btnImportData_Callback(hObject, eventdata, handles)
 solar = PCdat;
@@ -540,9 +539,9 @@ handles.calc.itau = PC_calc.inversetau (handles.calc.dN, handles.calc.tau, handl
 guidata(hObject, handles);
 
 function updatePlot(hObject, eventdata, handles)
-a = get(handles.uipanelGraph, 'children')
-b = get(a,'value')
-c = find([b{1:length(b)}]==1)
+a = get(handles.uipanelGraph, 'children');
+b = get(a,'value');
+c = find([b{1:length(b)}]==1);
 switch(c)
     case 6
         toggleSummary_Callback(hObject, eventdata, handles);
