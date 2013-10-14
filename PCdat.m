@@ -97,7 +97,7 @@ classdef PCdat
             
         end
         function obj = getxlsm(obj)
-            pthfil = [obj.path obj.file]
+            pthfil = [obj.path obj.file];
 %             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
             [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
                 = PCdat.sint_3_4_extract ([obj.path obj.file]);
@@ -109,9 +109,9 @@ classdef PCdat
 %             clf
 %             plot (obj.time, obj.vref, 'xr')
 %             hold on
-            [x,y,index] = PCdat.rangesel(obj.time, obj.vpc)              
+            [x,y,index] = PCdat.rangesel(obj.time, obj.vpc)   ;           
 %             hold off
-            obj = PCdat.objRangeSel(obj,index)
+            obj = PCdat.objRangeSel(obj,index);
             clf
 %             plotyy (obj.time, [obj.vpc, obj.vref], '+')
             
@@ -250,11 +250,11 @@ classdef PCdat
            for i = 1:length (fields)
                if isnumeric(arObj.(char(fields(i))))
                    if length (arObj.(char(fields(i)))) > 1
-                       arObj.(char(fields(i))) = arObj.(char(fields(i)))(selvec)
+                       arObj.(char(fields(i))) = arObj.(char(fields(i)))(selvec);
                    end
                end
            end
-           arObjO = arObj
+           arObjO = arObj;
             
         end
 %         function 
