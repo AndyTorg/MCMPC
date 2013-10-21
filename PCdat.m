@@ -6,7 +6,7 @@ classdef PCdat
     
     properties (Access = public)
         path
-        file
+        file              
     end
     properties (Dependent, Access = public)
         version
@@ -18,7 +18,8 @@ classdef PCdat
         vpc         % (V) vpc for this specific MCM sim may include uncertainty
         vref        % (V) vref for this specific MCM sim may include uncertainty
         vdark
-        index
+        index       % indicate file type chosen in uiget file, whether is .xls.xlsx.xlm
+        multipleFiles  % indicate multiple files selected in uigetfiles
         %             SAMPLE PARAS
         width       % (cm) the quasi-neutral region often estimated by the total thickness of the sample
         N_A         % (/cm3) the concentration of acceptors in the quasi-neutal region
@@ -50,6 +51,12 @@ classdef PCdat
 %               obj = PCdat('path', 'name')
             if nargin < 1
                 [obj.file,obj.path obj.index] =  uigetfile({'*.xlsm'; '*.xls'; '*.xlsx'}, 'Choose a Sinton SS','MultiSelect','on');
+                if (ischar(obj.file))
+                    obj.multipleFiles = 0
+                else
+                    obj.multipleFiles = 1
+                end
+                
             elseif nargin == 1
 %               starts the folder poingening from and initial sub folder,
 %               less clicks hopefully. 
@@ -88,20 +95,40 @@ classdef PCdat
                     error ('somehow you selected an incorrect file format')
             end
         end
-        function obj = getxls(obj)
-
+        
+        
+        function obj = getxls(varargin)
+         if nargin == 1    
             [obj.width, obj.N_A, obj.N_D, obj.OC, ~, ~, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, ~, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
                 = PCdat.sint_3_2_extract ([obj.path obj.file]);
+         end
+         if nargin == 2
+             [obj.width, obj.N_A, obj.N_D, obj.OC, ~, ~, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, ~, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
+                = PCdat.sint_3_2_extract ([obj.path obj.file(n)]);
+         end
+         
         end
-        function obj = getxlsx(obj)
+        
+        function obj = getxlsx(varargin)
             
         end
-        function obj = getxlsm(obj)
+        function obj = getxlsm(varargin)
+           if nargin == 1 
             pthfil = [obj.path obj.file];
 %             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
             [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
                 = PCdat.sint_3_4_extract ([obj.path obj.file]);
+           end
+           
+           if nargin == 2  
+             pthfil = [obj.path obj.file];
+%             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
+            [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
+                = PCdat.sint_3_4_extract ([obj.path obj.file(n)]);
+           end
         end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         function obj = TTrangesel (obj, varargin)
 %             obj = TTrangesel (obj, varargin)
 %             Tau time range select. Here we select the data form the tau

@@ -22,7 +22,7 @@ function varargout = Solar10152013(varargin)
 
 % Edit the above text to modify the response to help Solar10152013
 
-% Last Modified by GUIDE v2.5 15-Oct-2013 10:13:49
+% Last Modified by GUIDE v2.5 20-Oct-2013 12:16:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,14 +58,14 @@ set(handles.btnExportData,'enable','off')
 set(handles.btnClearAll,'enable','off')
 set(findall(handles.uipanelGraph, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
+handles.xAxis = 1;
+handles.yAxis = 1;
+handles.lineWidth = 1;
+handles.markerStyle = 0;
+set(handles.sliderWidth, 'value',handles.lineWidth )
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes Solar10152013 wait for user response (see UIRESUME)
-% uiwait(handles.figureMain);
-
-
-% --- Outputs from this function are returned to the command line.
 function varargout = Solar10152013_OutputFcn(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
@@ -75,114 +75,34 @@ function varargout = Solar10152013_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-
-
 function editWidth_Callback(hObject, eventdata, handles)
 handles.solar.width = str2double(get(hObject,'String'));
+guidata(hObject, handles);
 recalc( hObject, handles );
+handles = guidata(hObject); %need to use this line when the guidata(handle,dat) not working , freaking matlab
 updatePlot(hObject, eventdata, handles);
-
-
-% --- Executes during object creation, after setting all properties.
-function editWidth_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editWidth (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 
 function editResistivity_Callback(hObject, eventdata, handles)
 % hObject    handle to editResistivity (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of editResistivity as text
-%        str2double(get(hObject,'String')) returns contents of editResistivity as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function editResistivity_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editResistivity (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function editOpticalConst_Callback(hObject, eventdata, handles)
 handles.solar.OC = str2double(get(hObject,'String'));
+guidata(hObject, handles);
 recalc( hObject, handles );
+handles = guidata(hObject);
 updatePlot(hObject, eventdata, handles);
-
-% --- Executes during object creation, after setting all properties.
-function editOpticalConst_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editOpticalConst (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 
 function edit4_Callback(hObject, eventdata, handles)
 % hObject    handle to edit4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit4 as text
-%        str2double(get(hObject,'String')) returns contents of edit4 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function edit5_Callback(hObject, eventdata, handles)
 % hObject    handle to edit5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit5 as text
-%        str2double(get(hObject,'String')) returns contents of edit5 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit5_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes on selection change in comboBoxBulkType.
 function comboBoxBulkType_Callback(hObject, eventdata, handles)
@@ -206,30 +126,33 @@ function comboBoxBulkType_Callback(hObject, eventdata, handles)
   end
  updatePlot(hObject, eventdata, handles);
 
-% --- Executes during object creation, after setting all properties.
-function comboBoxBulkType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to comboBoxBulkType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % --- Executes on button press in btnImportData.
 function btnImportData_Callback(hObject, eventdata, handles)
 solar = PCdat;
-switch(solar.index)
-    case 1
-        solar = getxlsm(solar)
-    case 2
-        solar = getxls(solar)
-    case 3
-        solar = getxlsx(solar)
-    otherwise
+
+if (solar.multipleFiles)
+%     
+%     for i = 1 : (length(solar.file))
+%         switch(solar.index)
+%         case 1
+%             solar(i) = getxlsm(solar,i)
+%         case 2
+%             solar(i) = getxls(solar,i)
+%         case 3
+%             solar(i) = getxlsx(solar,i)
+%         otherwise
+%     end
+        
+else    
+    switch(solar.index)
+        case 1
+            solar = getxlsm(solar)
+        case 2
+            solar = getxls(solar)
+        case 3
+            solar = getxlsx(solar)
+        otherwise
+    end
 end
 
 temp = sprintf('solar @ %s',solar.file);
@@ -309,14 +232,13 @@ end
 function btnClearAll_Callback(hObject, eventdata, handles)
 set(handles.btnExportData,'enable','off')
 set(handles.btnImportData,'enable','on')
-deselection(handles)
+graphDeselection(handles)
 set(findall(handles.uipanelGraph, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.uipanelControl, '-property', 'enable'), 'visible', 'off')
 handles.calc = 0;
 handles.solar = 0;
 clearplot = plot(0,0);
-
 
 % --- Executes on button press in btnExportData.
 function btnExportData_Callback(hObject, eventdata, handles)
@@ -341,10 +263,9 @@ range = sprintf('%c3', temp)
 output = xlswrite('CalcData',handles.calc.(tabs{i}),'Sheet1',range)
 end
 
-
 % --- Executes on button press in toggleSummary.
 function toggleSummary_Callback(hObject, eventdata, handles)
-deselection(handles)
+graphDeselection(handles)
 set(handles.toggleSummary,'value', 1)
 %AFT ## style modification##
 set(handles.toggleSummary,'BackgroundColor',[1 1 0])
@@ -356,21 +277,74 @@ plotSuntoTime = axes('Parent', handles.uipanelPlot, ...
             'Position', [handles.xOffset 2*handles.yOffset+handles.height/2 handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
         
 [haxes,line1,line2] =plotyy(handles.solar.time, handles.calc.suns, handles.solar.time, handles.calc.cond); 
+if (handles.xAxis)
+    if (handles.yAxis)
+        set(haxes(1),'XScale','log','YScale','log'); 
+        set(haxes(2),'XScale','log','YScale','log'); 
+    else
+        set(haxes(1),'XScale','log');
+        set(haxes(2),'XScale','log');
+    end
+else
+    if (handles.yAxis)
+        set(haxes(1),'YScale','log');
+        set(haxes(2),'YScale','log');
+    else
+        set(haxes(1),'XScale','linear','YScale','linear');
+        set(haxes(2),'XScale','linear','YScale','linear');
+    end
+end 
+
+if (handles.markerStyle)
+    set(line1, 'Marker','*')
+    set(line1, 'linestyle','none')
+    set(line2, 'Marker','*')
+    set(line2, 'linestyle','none')
+else
+    set(line1, 'linestyle','-')
+    set(line1, 'Marker','none' )
+    set(line2, 'Marker','none')
+    set(line2, 'linestyle','-')
+end
+
+
+set(line1,'linewidth',handles.lineWidth);
+set(line2,'linewidth',handles.lineWidth);
 axes(haxes(1))
 xlabel('time(seconds)')
 ylabel('Illumination(suns)')
 axes(haxes(2))
 xlabel('time(seconds)')
 ylabel('Photoconductance(Siemens)')
-set(line2,'LineStyle','--')        
+       
 title('Illumination and Photoconductance')
 
 %%%%
 plotAugettodN = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [2*handles.xOffset+handles.width/2 2*handles.yOffset+handles.height/2 handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
-        
-plot(plotAugettodN, handles.calc.dN, handles.calc.itau );
+if (handles.xAxis)
+    if (handles.yAxis)
+        h = loglog(plotAugettodN, handles.calc.dN, handles.calc.itau )   ;     
+    else
+        h = semilogx( handles.calc.dN, handles.calc.itau);
+    end
+else
+    if (handles.yAxis)
+        h = semilogy(handles.calc.dN, handles.calc.itau);
+    else
+        h = plot(plotAugettodN, handles.calc.dN, handles.calc.itau );
+    end
+end    
+
+if (handles.markerStyle)
+    set(h,'Marker','*')
+    set(h,'linestyle','none')
+else
+    set(h,'linestyle','-')
+    set(h,'Marker','none' )
+end
+%plot(plotAugettodN, handles.calc.dN, handles.calc.itau );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Auger Lifetime, \tau_{Auger} (s^{-1})')
 title('Inverse Lifetime vs. Carrier Density')
@@ -389,15 +363,40 @@ title('Implied V_{oc}')
 plotTautodN = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [2*handles.xOffset+handles.width/2 handles.yOffset handles.width/2-handles.xOffset, handles.height/2-handles.yOffset]);
-        
-plot(plotTautodN, handles.calc.dN, handles.calc.tau );
+if (handles.xAxis)
+    if (handles.yAxis)
+        h = loglog( plotTautodN, handles.calc.dN, handles.calc.tau );        
+    else
+        h = semilogx( handles.calc.dN, handles.calc.tau);
+    end
+else
+    if (handles.yAxis)
+        h = semilogy(handles.calc.dN, handles.calc.tau);
+    else
+        h = plot(plotTautodN, handles.calc.dN, handles.calc.tau);
+    end
+end          
+
+if (handles.markerStyle)
+    set(h,'Marker','*')
+    set(h,'linestyle','none')
+else
+    set(h,'linestyle','-')
+    set(h,'Marker','none' )
+end
+
+
+set(h,'linewidth',handles.lineWidth);
+%loglog(plotTautodN, handles.calc.dN, handles.calc.tau );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Effective Lifetime, \tau_e_f_f (s^{-1})')
 title('Minority Carrier Lifetime vs Minority Carrier Density')
+handles.toggle = 1;
+guidata(hObject, handles);
 
 % --- Executes on button press in toggleRawData.
 function toggleRawData_Callback(hObject, eventdata, handles)
-deselection(handles)
+graphDeselection(handles)
 set(handles.toggleRawData,'value', 1)
 set(handles.toggleRawData,'BackgroundColor','y')
 clearPlot(handles.uipanelPlot)
@@ -405,6 +404,39 @@ plotRaw = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [handles.xOffset handles.yOffset handles.width-40 handles.height]);
 [haxes,line1,line2] =plotyy(handles.solar.time, handles.solar.vpc, handles.solar.time, handles.solar.vref); 
+if (handles.xAxis)
+    if (handles.yAxis)
+        set(haxes(1),'XScale','log','YScale','log'); 
+        set(haxes(2),'XScale','log','YScale','log'); 
+    else
+        set(haxes(1),'XScale','log');
+        set(haxes(2),'XScale','log');
+    end
+else
+    if (handles.yAxis)
+        set(haxes(1),'YScale','log');
+        set(haxes(2),'YScale','log');
+    else
+        set(haxes(1),'XScale','linear','YScale','linear');
+        set(haxes(2),'XScale','linear','YScale','linear');
+    end
+end 
+
+if (handles.markerStyle)
+    set(line1, 'Marker','*')
+    set(line1, 'linestyle','none')
+    set(line2, 'Marker','*')
+    set(line2, 'linestyle','none')
+else
+    set(line1, 'linestyle','-')
+    set(line1, 'Marker','none' )
+    set(line2, 'Marker','none')
+    set(line2, 'linestyle','-')
+end
+
+
+set(line1,'linewidth',handles.lineWidth);
+set(line2,'linewidth',handles.lineWidth);
 axes(haxes(1))
 xlabel('time(seconds)')
 ylabel('Photovoltage(volts)')
@@ -412,13 +444,14 @@ axes(haxes(2))
 xlabel('time(seconds)')
 ylabel('Reference Voltage(volts)')
 ylim([-1e-3 1e-3])
-set(line2,'LineStyle','--')
 
+handles.toggle = 2;
+guidata(hObject, handles);
 
 
 % --- Executes on button press in toggleTauEffective.
 function toggleTauEffective_Callback(hObject, eventdata, handles)
-deselection(handles)
+graphDeselection(handles)
 set(handles.toggleTauEffective,'value', 1)
 set(handles.toggleTauEffective,'BackgroundColor','y')
 clearPlot(handles.uipanelPlot)
@@ -426,62 +459,159 @@ plotTauEffective = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
         
-loglog(plotTauEffective, handles.calc.dN, handles.calc.tau );
-xlabel('Minority Carrier,\DeltaN (cm^{-3})')
+if (handles.xAxis)
+    if (handles.yAxis)
+        h = loglog(plotTauEffective, handles.calc.dN, handles.calc.tau );        
+    else
+        h = semilogx( handles.calc.dN, handles.calc.tau);
+    end
+else
+    if (handles.yAxis)
+        h = semilogy( handles.calc.dN, handles.calc.tau);
+    else
+        h = plot(plotTauEffective, handles.calc.dN, handles.calc.tau);
+    end
+end 
+if (handles.markerStyle)
+    set(h,'Marker','*')
+    set(h,'linestyle','none')
+else
+    set(h,'linestyle','-')
+    set(h,'Marker','none' )
+end
+
+
+set(h,'linewidth',handles.lineWidth);
+% loglog(plotTauEffective, handles.calc.dN, handles.calc.tau );
 ylabel('Effective Lifetime, \tau_e_f_f (s^{-1})')
-xlim([10e10 10e16])
+xlabel('Minority Carrier,\DeltaN (cm^{-3})')
+%xlim([10e10 10e16])
+handles.toggle = 3;
+guidata(hObject, handles);
 
 
 
 % --- Executes on button press in toggleJoeSRV.
 function toggleJoeSRV_Callback(hObject, eventdata, handles)
-deselection(handles)
+graphDeselection(handles)
 set(handles.toggleJoeSRV,'value', 1)
 set(handles.toggleJoeSRV,'BackgroundColor','y')
 clearPlot(handles.uipanelPlot)
 plotJoeSRV = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
-        
-loglog(plotJoeSRV, handles.calc.j0e, handles.calc.itau );
+if (handles.xAxis)
+    if (handles.yAxis)
+        h = loglog(plotJoeSRV, handles.calc.j0e, handles.calc.itau) ;       
+    else
+        h = semilogx( handles.calc.j0e, handles.calc.itau);
+    end
+else
+    if (handles.yAxis)
+        h = semilogy( handles.calc.j0e, handles.calc.itau );
+    else
+        h = plot(plotJoeSRV, handles.calc.j0e, handles.calc.itau);
+    end
+end             
+
+if (handles.markerStyle)
+    set(h,'Marker','*')
+    set(h,'linestyle','none')
+else
+    set(h,'linestyle','-')
+    set(h,'Marker','none' )
+end
+
+
+set(h,'linewidth',handles.lineWidth);
+%loglog(plotJoeSRV, handles.calc.j0e, handles.calc.itau );
 xlabel('Emitter Saturation Current Density, j0e (Acm^{-2})')
 ylabel('Auger Lifetime, \tau_{Auger} (s^{-1})')
-xlim([10e-17 10e-9])
+%xlim([10e-17 10e-9])
+handles.toggle = 4;
+guidata(hObject, handles);
 
 
 % --- Executes on button press in toggleTauBulk.
 function toggleTauBulk_Callback(hObject, eventdata, handles)
-deselection(handles)
+graphDeselection(handles)
 set(handles.toggleTauBulk,'value', 1)
 set(handles.toggleTauBulk,'BackgroundColor','y')
 clearPlot(handles.uipanelPlot)
 plotTauBulk = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
-        
-loglog(plotTauBulk, handles.calc.dN, handles.calc.tau_b );
+if (handles.xAxis)
+    if (handles.yAxis)
+        h = loglog(plotTauBulk, handles.calc.dN, handles.calc.tau_b);        
+    else
+        h = semilogx(handles.calc.dN, handles.calc.tau_b);
+    end
+else
+    if (handles.yAxis)
+        h = semilogy(handles.calc.dN, handles.calc.tau_b);
+    else
+        h = plot(plotTauBulk, handles.calc.dN, handles.calc.tau_b);
+    end
+end              
+if (handles.markerStyle)
+    set(h,'Marker','*')
+    set(h,'linestyle','none')
+else
+    set(h,'linestyle','-')
+    set(h,'Marker','none' )
+end
+
+
+set(h,'linewidth',handles.lineWidth);
+%loglog(plotTauBulk, handles.calc.dN, handles.calc.tau_b );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Bulk Lifetime\tau_{bulk} (s^{-1})')
-xlim([10e10 10e16])
-
+%xlim([10e10 10e16])
+handles.toggle = 5;
+guidata(hObject, handles);
 
 
 % --- Executes on button press in toggleJoeEffective.
 function toggleJoeEffective_Callback(hObject, eventdata, handles)
-deselection(handles)
+graphDeselection(handles)
 set(handles.toggleJoeEffective,'value', 1)
 set(handles.toggleJoeEffective,'BackgroundColor','y')
 clearPlot(handles.uipanelPlot)
 plotJoeEffective = axes('Parent', handles.uipanelPlot, ...
             'Units', 'pixels', ...
             'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
-        
-loglog(plotJoeEffective, handles.calc.dN, handles.calc.j0e );
+
+if (handles.xAxis)
+    if (handles.yAxis)
+        h = loglog(plotJoeEffective, handles.calc.dN, handles.calc.j0e) ;       
+    else
+        h = semilogx( handles.calc.dN, handles.calc.j0e);
+    end
+else
+    if (handles.yAxis)
+       h = semilogy( handles.calc.dN, handles.calc.j0e);
+    else
+       h = plot(plotJoeEffective, handles.calc.dN, handles.calc.j0e );
+    end
+end   
+
+if (handles.markerStyle)
+    set(h,'Marker','*')
+    set(h,'linestyle','none')
+else
+    set(h,'linestyle','-')
+    set(h,'Marker','none' )
+end
+
+
+set(h,'linewidth',handles.lineWidth);
+%loglog(plotJoeEffective, handles.calc.dN, handles.calc.j0e );
 xlabel('Minority Carrier,\DeltaN (cm^{-3})')
 ylabel('Emitter Saturation Current Density, j0e (Acm^{-2})')
-xlim([10e10 10e16])
-
-
+%xlim([10e10 10e16])
+handles.toggle = 6;
+guidata(hObject, handles);
 
 
 function editNd_Callback(hObject, eventdata, handles)
@@ -489,26 +619,11 @@ handles.solar.N_D = str2double(get(hObject,'String'));
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
-% --- Executes during object creation, after setting all properties.
-function editNd_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editNd (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function editNa_Callback(hObject, eventdata, handles)
 handles.solar.N_A = str2double(get(hObject,'String'));
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
-% --- Executes during object creation, after setting all properties.
 function editNa_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to editNa (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -520,19 +635,15 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on button press in pushbutton4.
 function pushbutton4_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-
 % --- Executes on selection change in comboBoxMuSetting.
 function comboBoxMuSetting_Callback(hObject, eventdata, handles)
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
-
 
 % --- Executes during object creation, after setting all properties.
 function comboBoxMuSetting_CreateFcn(hObject, eventdata, handles)
@@ -546,207 +657,101 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-% --- Executes on selection change in comboBoxAugerSetting.
 function comboBoxAugerSetting_Callback(hObject, eventdata, handles)
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
-
-% --- Executes during object creation, after setting all properties.
-function comboBoxAugerSetting_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to comboBoxAugerSetting (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in comboBoxTauSetting.
 function comboBoxTauSetting_Callback(hObject, eventdata, handles)
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
-
-% --- Executes during object creation, after setting all properties.
-function comboBoxTauSetting_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to comboBoxTauSetting (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 
 function editDarkVoltage_Callback(hObject, eventdata, handles)
 handles.solar.vdark = str2double(get(hObject,'String'));
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
-% --- Executes during object creation, after setting all properties.
-function editDarkVoltage_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editDarkVoltage (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function editBhatA_Callback(hObject, eventdata, handles)
 handles.solar.a = str2double(get(hObject,'String'));
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
-
-
-
-% --- Executes during object creation, after setting all properties.
-function editBhatA_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editBhatA (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 
 function editBhatB_Callback(hObject, eventdata, handles)
 handles.solar.b = str2double(get(hObject,'String'));
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
-
-% --- Executes during object creation, after setting all properties.
-function editBhatB_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editBhatB (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
 function editBhatC_Callback(hObject, eventdata, handles)
 handles.solar.c = str2double(get(hObject,'String'));
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
-% --- Executes during object creation, after setting all properties.
-function editBhatC_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editBhatC (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in checkboxSCalibration.
 function checkboxSCalibration_Callback(hObject, eventdata, handles)
 % hObject    handle to checkboxSCalibration (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkboxSCalibration
-
-
-% --- Executes on button press in checkboxVCalibration.
 function checkboxVCalibration_Callback(hObject, eventdata, handles)
 % hObject    handle to checkboxVCalibration (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkboxVCalibration
-
-
-% --- Executes on button press in radiobutton1.
 function radiobutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to radiobutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
-
-
 
 function editDopingError_Callback(hObject, eventdata, handles)
 % hObject    handle to editDopingError (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of editDopingError as text
-%        str2double(get(hObject,'String')) returns contents of editDopingError as a double
+function radiobuttonLine_Callback(hObject, eventdata, handles)
+handles.markerStyle = 0;
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
 
+function radiobuttonMarker_Callback(hObject, eventdata, handles)
+handles.markerStyle = 1;
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
 
-% --- Executes during object creation, after setting all properties.
-function editDopingError_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to editDopingError (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+function sliderWidth_Callback(hObject, eventdata, handles)
+handles.lineWidth = get(handles.sliderWidth,'value');
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in radiobuttonLinearX.
 function radiobuttonLinearX_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobuttonLinearX (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobuttonLinearX
-
+handles.xAxis = 0;
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
 
 % --- Executes on button press in radiobuttonLogX.
 function radiobuttonLogX_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobuttonLogX (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobuttonLogX
+handles.xAxis = 1;
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
 
 
 % --- Executes on button press in radiobuttonLinearY.
 function radiobuttonLinearY_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobuttonLinearY (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobuttonLinearY
+handles.yAxis = 0;
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
 
 
 % --- Executes on button press in radiobuttonLogY.
 function radiobuttonLogY_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobuttonLogY (see GCBO)
+handles.yAxis = 1;
+guidata(hObject, handles);
+updatePlot(hObject, eventdata, handles);
+
+
+function btnTest_Callback(hObject, eventdata, handles)
+
+function edit21_Callback(hObject, eventdata, handles)
+% hObject    handle to edit21 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobuttonLogY
 
 
 function clearPlot( handles )
@@ -755,7 +760,7 @@ if ~isempty(ah)
    delete(ah)
 end
 
-function deselection(handles)
+function graphDeselection(handles)
 % AFT have changed in order to have yellow buttons
 set(handles.toggleSummary,'BackgroundColor', 'y')
 set(handles.toggleSummary,'value', 0)
@@ -770,79 +775,169 @@ set(handles.toggleTauBulk,'value', 0)
 set(handles.toggleJoeEffective,'BackgroundColor','y')
 set(handles.toggleJoeEffective,'value', 0)
 
-
-function recalc( hObject,  handles )
+function recalc( hObject, handles )
 handles.calc.cond = PC_calc.conductivityOFF(handles.solar.vpc, handles.solar.vdark, handles.solar.a, handles.solar.b, handles.solar.c);
 
 list=get(handles.comboBoxMuSetting,'String');
 val=get(handles.comboBoxMuSetting,'Value');
 mu_mode = list{val}
 handles.calc.dN = PC_calc.carriers(handles.calc.cond, handles.solar.width, handles.solar.N_A, handles.solar.N_D, mu_mode);
-
-
 %using gref for vref_to_sun???
 [handles.calc.suns, handles.calc.gen] = PC_calc.generation(handles.solar.vref, handles.solar.gref, handles.solar.OC, handles.solar.width);
 list=get(handles.comboBoxTauSetting,'String');
 val=get(handles.comboBoxTauSetting,'Value');
 mode = list{val}
 handles.calc.tau = PC_calc.lifetime(handles.solar.time, handles.calc.dN, handles.calc.gen, mode);
-
 list=get(handles.comboBoxAugerSetting,'String');
 val=get(handles.comboBoxAugerSetting,'Value');
 mode = list{val}
 handles.calc.itau = PC_calc.inversetau (handles.calc.dN, handles.calc.tau, handles.solar.N_A, handles.solar.N_D, mode);
-
 [handles.calc.j0e, handles.calc.tau_b] = PC_calc.emittersat(handles.calc.dN, handles.calc.itau, handles.solar.width, handles.solar.N_A, handles.solar.N_D);
 % itau = SRV??
+sprintf('recalc');
 guidata(hObject, handles);
 
+
+
 function updatePlot(hObject, eventdata, handles)
-a = get(handles.uipanelGraph, 'children');
-b = get(a,'value');
-c = find([b{1:length(b)}]==1);
-switch(c)
-    case 6
+temp = handles.toggle;
+switch( temp )
+    case 1
         toggleSummary_Callback(hObject, eventdata, handles);
-    case 3
-        toggleRawData_Callback(hObject, eventdata, handles);
     case 2
+        toggleRawData_Callback(hObject, eventdata, handles);
+    case 3
         toggleTauEffective_Callback(hObject, eventdata, handles);
-    case 1 
+    case 4 
         toggleJoeSRV_Callback(hObject, eventdata, handles);
-    case 4
-        toggleTauBulk_Callback(hObject, eventdata, handles);
     case 5
+        toggleTauBulk_Callback(hObject, eventdata, handles);
+    case 6
         toggleJoeEffective_Callback(hObject, eventdata, handles);
 end
+sprintf('updateplot');
+
+%-------------------------------------------------------------------------------------------------------
 
 
-% --- Executes on button press in radiobuttonLine.
-function radiobuttonLine_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobuttonLine (see GCBO)
+% --- Executes during object creation, after setting all properties.
+function edit21_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit21 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: get(hObject,'Value') returns toggle state of radiobuttonLine
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
-
-% --- Executes on button press in radiobuttonMarker.
-function radiobuttonMarker_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobuttonMarker (see GCBO)
+% --- Executes during object creation, after setting all properties.
+function editWidth_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editWidth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: get(hObject,'Value') returns toggle state of radiobuttonMarker
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
-
-% --- Executes on slider movement.
-function sliderWidth_Callback(hObject, eventdata, handles)
-% hObject    handle to sliderWidth (see GCBO)
+% --- Executes during object creation, after setting all properties.
+function editResistivity_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editResistivity (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% handles    empty - handles not created until after all CreateFcns called
 
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
+% --- Executes during object creation, after setting all properties.
+function editOpticalConst_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editOpticalConst (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function comboBoxBulkType_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to comboBoxBulkType (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editNd_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editNd (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editDopingError_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDopingError (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function comboBoxAugerSetting_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to comboBoxAugerSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 
 % --- Executes during object creation, after setting all properties.
 function sliderWidth_CreateFcn(hObject, eventdata, handles)
@@ -855,7 +950,65 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 
+% --- Executes during object creation, after setting all properties.
+function comboBoxTauSetting_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to comboBoxTauSetting (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
 
-% --- Executes on button press in btnTest.
-function btnTest_Callback(hObject, eventdata, handles)
-set(gcf,'Name','xxxxx')
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editDarkVoltage_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editDarkVoltage (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editBhatA_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editBhatA (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editBhatB_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editBhatB (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editBhatC_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editBhatC (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in radiobuttonLinearX.
