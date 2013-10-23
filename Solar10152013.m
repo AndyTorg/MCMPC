@@ -124,7 +124,10 @@ function comboBoxBulkType_Callback(hObject, eventdata, handles)
     set(handles.editNa,'enable','off')
     set(handles.editNd,'enable','on')
   end
- updatePlot(hObject, eventdata, handles);
+guidata(hObject, handles);
+recalc( hObject, handles );
+handles = guidata(hObject); %need to use this line when the guidata(handle,dat) not working , freaking matlab
+updatePlot(hObject, eventdata, handles);
 
 % --- Executes on button press in btnImportData.
 function btnImportData_Callback(hObject, eventdata, handles)
@@ -644,7 +647,9 @@ function pushbutton4_Callback(hObject, eventdata, handles)
 
 % --- Executes on selection change in comboBoxMuSetting.
 function comboBoxMuSetting_Callback(hObject, eventdata, handles)
+guidata(hObject, handles);
 recalc( hObject, handles );
+handles = guidata(hObject); %need to use this line when the guidata(handle,dat) not working , freaking matlab
 updatePlot(hObject, eventdata, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -660,11 +665,15 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function comboBoxAugerSetting_Callback(hObject, eventdata, handles)
+guidata(hObject, handles);
 recalc( hObject, handles );
+handles = guidata(hObject); %need to use this line when the guidata(handle,dat) not working , freaking matlab
 updatePlot(hObject, eventdata, handles);
 
 function comboBoxTauSetting_Callback(hObject, eventdata, handles)
+guidata(hObject, handles);
 recalc( hObject, handles );
+handles = guidata(hObject); %need to use this line when the guidata(handle,dat) not working , freaking matlab
 updatePlot(hObject, eventdata, handles);
 
 function editDarkVoltage_Callback(hObject, eventdata, handles)
@@ -796,7 +805,7 @@ mode = list{val}
 handles.calc.itau = PC_calc.inversetau (handles.calc.dN, handles.calc.tau, handles.solar.N_A, handles.solar.N_D, mode);
 [handles.calc.j0e, handles.calc.tau_b] = PC_calc.emittersat(handles.calc.dN, handles.calc.itau, handles.solar.width, handles.solar.N_A, handles.solar.N_D);
 % itau = SRV??
-sprintf('recalc');
+sprintf('recalc')
 guidata(hObject, handles);
 
 
@@ -817,7 +826,7 @@ switch( temp )
     case 6
         toggleJoeEffective_Callback(hObject, eventdata, handles);
 end
-sprintf('updateplot');
+sprintf('updateplot')
 
 %-------------------------------------------------------------------------------------------------------
 

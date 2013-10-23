@@ -20,6 +20,7 @@ classdef PCdat
         vdark
         index       % indicate file type chosen in uiget file, whether is .xls.xlsx.xlm
         multipleFiles  % indicate multiple files selected in uigetfiles
+        dataselected 
         %             SAMPLE PARAS
         width       % (cm) the quasi-neutral region often estimated by the total thickness of the sample
         N_A         % (/cm3) the concentration of acceptors in the quasi-neutal region
