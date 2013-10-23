@@ -57,6 +57,7 @@ handles.output = hObject;
 set(handles.btnExportData,'enable','off')
 set(handles.btnClearAll,'enable','off')
 set(handles.btnDataSelection,'enable','off')
+set(handles.comboBoxObj,'enable','off')   
 set(findall(handles.uipanelGraph, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
 handles.xAxis = 1;
@@ -754,16 +755,109 @@ updatePlot(hObject, eventdata, handles);
 % --- Executes on selection change in comboBoxObj.
 function comboBoxObj_Callback(hObject, eventdata, handles)
 n = get(handles.comboBoxObj,'value')
-handles.solar = handles.data(n)
+solar = handles.data(n)
 temp = sprintf('solar @ %s',handles.solar.file{n});
 set(gcf,'name',temp);
+
+
+set(handles.editBhatA,'string',solar.a)
+set(handles.editBhatB,'string',solar.b)
+set(handles.editBhatC,'string',solar.c)
+set(handles.editDarkVoltage,'string',solar.vdark)
+set(handles.editOpticalConst,'string',solar.OC)
+set(handles.editWidth,'string',solar.width)
+set(handles.btnImportData,'enable','off')
+set(handles.btnClearAll,'enable','on')
+% all are calculation, going to consolidate into one function
+calc.cond = PC_calc.conductivityOFF(solar.vpc, solar.vdark, solar.a, solar.b, solar.c);
+list=get(handles.comboBoxMuSetting,'String');
+val=get(handles.comboBoxMuSetting,'Value');
+handles.mu_mode = list{val};
 guidata(hObject, handles);
+calc.dN = PC_calc.carriers(calc.cond, solar.width, solar.N_A, solar.N_D, handles.mu_mode);
+%using gref for vref_to_sun???
+[calc.suns, calc.gen] = PC_calc.generation(solar.vref, solar.gref, solar.OC, solar.width);
+list=get(handles.comboBoxTauSetting,'String');
+val=get(handles.comboBoxTauSetting,'Value');
+handles.tau_mode = list{val};
+guidata(hObject, handles);
+calc.tau = PC_calc.lifetime(solar.time, calc.dN, calc.gen, handles.tau_mode);
+list=get(handles.comboBoxAugerSetting,'String');
+val=get(handles.comboBoxAugerSetting,'Value');
+handles.auger_mode = list{val};
+guidata(hObject, handles);
+calc.itau = PC_calc.inversetau (calc.dN, calc.tau, solar.N_A, solar.N_D, handles.auger_mode);
+
+[calc.j0e, calc.tau_b] = PC_calc.emittersat(calc.dN, calc.itau, solar.width, solar.N_A, solar.N_D);
+% itau = SRV??
+
+handles.calc = calc;
+guidata(hObject, handles);
+handles.solar = solar;% pass obj solar data to the GUI handles, so callback can share data
+guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
 handles = guidata(hObject);
 recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
+
+
 function btnTest_Callback(hObject, eventdata, handles)
-set(handles.comboBoxObj,'string',handles.data(1).file)
+graphDeselection(handles)
+set(handles.toggleTauEffective,'value', 1)
+set(handles.toggleTauEffective,'BackgroundColor','y')
+clearPlot(handles.uipanelPlot)
+plotTauEffective = axes('Parent', handles.uipanelPlot, ...
+            'Units', 'pixels', ...
+            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
+x = 0;
+y = 0;
+tempx = 0;
+tempy = 0;
+for n = 1:(length(handles.solar.file))
+   
+    handles.solar = handles.data(n)
+    guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
+    handles = guidata(hObject);
+    recalc( hObject, handles );
+    handles = guidata(hObject);
+    tempx = handles.calc.tau;
+    tempy = handles.calc.dN;
+    x = [x; tempx];
+    y = [y; tempy];
+      
+end 
+x = x(2:end);
+y = y(2:end);
+    
+    if (handles.xAxis)
+        if (handles.yAxis)
+            h = loglog(plotTauEffective, x, y );        
+        else
+            h = semilogx( x,y);
+        end
+    else
+        if (handles.yAxis)
+            h = semilogy( x,y);
+        else
+            h = plot(plotTauEffective, x,y);
+        end
+    end 
+    if (handles.markerStyle)
+        set(h,'Marker','*')
+        set(h,'linestyle','none')
+    else
+        set(h,'linestyle','-')
+        set(h,'Marker','none' )
+    end
+set(h,'linewidth',handles.lineWidth);
+guidata(hObject, handles);  
+% loglog(plotTauEffective, handles.calc.dN, handles.calc.tau );
+ylabel('Effective Lifetime, \tau_e_f_f (s^{-1})')
+xlabel('Minority Carrier,\DeltaN (cm^{-3})')
+%xlim([10e10 10e16])
+handles.toggle = 3;
+
+
 
 function edit21_Callback(hObject, eventdata, handles)
 % hObject    handle to edit21 (see GCBO)
@@ -794,7 +888,6 @@ set(handles.toggleJoeEffective,'value', 0)
 
 function recalc( hObject, handles )
 handles.calc.cond = PC_calc.conductivityOFF(handles.solar.vpc, handles.solar.vdark, handles.solar.a, handles.solar.b, handles.solar.c);
-
 list=get(handles.comboBoxMuSetting,'String');
 val=get(handles.comboBoxMuSetting,'Value');
 mu_mode = list{val}
