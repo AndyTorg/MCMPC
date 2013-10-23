@@ -130,7 +130,7 @@ function comboBoxBulkType_Callback(hObject, eventdata, handles)
 function btnImportData_Callback(hObject, eventdata, handles)
 solar = PCdat;
 
-if (solar.multipleFiles)
+% if (solar.multipleFiles)
 %     
 %     for i = 1 : (length(solar.file))
 %         switch(solar.index)
@@ -141,9 +141,10 @@ if (solar.multipleFiles)
 %         case 3
 %             solar(i) = getxlsx(solar,i)
 %         otherwise
+%         end
 %     end
-        
-else    
+%         
+% else    
     switch(solar.index)
         case 1
             solar = getxlsm(solar)
@@ -153,7 +154,8 @@ else
             solar = getxlsx(solar)
         otherwise
     end
-end
+%     
+% end
 
 temp = sprintf('solar @ %s',solar.file);
 set(gcf,'name',temp);

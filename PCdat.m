@@ -99,12 +99,15 @@ classdef PCdat
         
         function obj = getxls(varargin)
          if nargin == 1    
+              obj = varargin{1}
             [obj.width, obj.N_A, obj.N_D, obj.OC, ~, ~, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, ~, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
                 = PCdat.sint_3_2_extract ([obj.path obj.file]);
          end
-         if nargin == 2
+         if nargin > 1
+             obj = varargin{1}
+             n = varargin{2}
              [obj.width, obj.N_A, obj.N_D, obj.OC, ~, ~, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, ~, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
-                = PCdat.sint_3_2_extract ([obj.path obj.file(n)]);
+                = PCdat.sint_3_2_extract ([obj.path obj.file{n}]);
          end
          
         end
@@ -114,17 +117,20 @@ classdef PCdat
         end
         function obj = getxlsm(varargin)
            if nargin == 1 
+               obj = varargin{1}
             pthfil = [obj.path obj.file];
 %             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
             [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
                 = PCdat.sint_3_4_extract ([obj.path obj.file]);
            end
            
-           if nargin == 2  
+           if nargin > 1  
+             obj = varargin{1}
+             n = varargin{2}
              pthfil = [obj.path obj.file];
 %             size({obj.width, obj.N_A, obj.N_D, obj.OC, 1, 2, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, 3, obj.suns, obj.a, obj.b, obj.c, obj.vdark})
             [obj.width, obj.N_A, obj.N_D, obj.OC, x, y, obj.time, obj.vpc, obj.vref, obj.dN, obj.tau, z, obj.suns, obj.a, obj.b, obj.c, obj.vdark, obj.gref]...
-                = PCdat.sint_3_4_extract ([obj.path obj.file(n)]);
+                = PCdat.sint_3_4_extract ([obj.path obj.file{n}]);
            end
         end
         
