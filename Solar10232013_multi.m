@@ -22,7 +22,7 @@ function varargout = Solar10232013_multi(varargin)
 
 % Edit the above text to modify the response to help Solar10232013_multi
 
-% Last Modified by GUIDE v2.5 23-Oct-2013 14:23:20
+% Last Modified by GUIDE v2.5 01-Nov-2013 10:23:38
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -179,8 +179,11 @@ end
 set(handles.btnDataSelection,'enable','on')
 handles.xOffset = 70;
 handles.yOffset = 45;
-handles.width = 1050;
-handles.height = 500;
+set(handles.uipanelPlot,'Units','pixels')
+temp = get(handles.uipanelPlot,'Position');
+
+handles.width = temp(3)*0.9;
+handles.height = temp(4)*0.9;
 
 set(handles.editBhatA,'string',solar.a)
 set(handles.editBhatB,'string',solar.b)
@@ -244,7 +247,7 @@ set(findall(handles.uipanelControl, '-property', 'enable'), 'enable', 'off')
 set(findall(handles.uipanelControl, '-property', 'enable'), 'visible', 'off')
 handles.calc = 0;
 handles.solar = 0;
-clearplot = plot(0,0);
+
 
 % --- Executes on button press in btnExportData.
 function btnExportData_Callback(hObject, eventdata, handles)
@@ -264,8 +267,8 @@ output = xlswrite('CalcData',tabs,range)
 % method2:still having NaN in spreadsheet
 output = xlswrite('CalcData',handles.solar.time,'Sheet1','A3')
 for i = 2:length(tabs)
-temp = 'A' + i - 1
-range = sprintf('%c3', temp)
+temp = 'A' + i - 1;
+range = sprintf('%c3', temp);
 output = xlswrite('CalcData',handles.calc.(tabs{i}),'Sheet1',range)
 end
 
@@ -462,8 +465,8 @@ set(handles.toggleTauEffective,'value', 1)
 set(handles.toggleTauEffective,'BackgroundColor','y')
 clearPlot(handles.uipanelPlot)
 plotTauEffective = axes('Parent', handles.uipanelPlot, ...
-            'Units', 'pixels', ...
-            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
+             'Units', 'pixels', ...
+             'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
         
 if (handles.xAxis)
     if (handles.yAxis)
@@ -800,64 +803,55 @@ recalc( hObject, handles );
 updatePlot(hObject, eventdata, handles);
 
 
+function editMovingAverage_Callback(hObject, eventdata, handles)
+temp = get(handles.radiobuttonMovingAverage,'value');
+handles = guidata(hObject);
+old = handles.oldData;
 
-function btnTest_Callback(hObject, eventdata, handles)
-graphDeselection(handles)
-set(handles.toggleTauEffective,'value', 1)
-set(handles.toggleTauEffective,'BackgroundColor','y')
-clearPlot(handles.uipanelPlot)
-plotTauEffective = axes('Parent', handles.uipanelPlot, ...
-            'Units', 'pixels', ...
-            'Position', [handles.xOffset handles.yOffset handles.width, handles.height]);
-x = 0;
-y = 0;
-tempx = 0;
-tempy = 0;
-for n = 1:(length(handles.solar.file))
-   
-    handles.solar = handles.data(n)
+if (temp)
+    temp = str2double(get(hObject,'String'));
+    movingAverage(old, temp, hObject, handles )
+    handles = guidata(hObject);
+    handles.solar.vref = handles.newData;
     guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
     handles = guidata(hObject);
     recalc( hObject, handles );
-    handles = guidata(hObject);
-    tempx = handles.calc.tau;
-    tempy = handles.calc.dN;
-    x = [x; tempx];
-    y = [y; tempy];
-      
-end 
-x = x(2:end);
-y = y(2:end);
-    
-    if (handles.xAxis)
-        if (handles.yAxis)
-            h = loglog(plotTauEffective, x, y );        
-        else
-            h = semilogx( x,y);
-        end
-    else
-        if (handles.yAxis)
-            h = semilogy( x,y);
-        else
-            h = plot(plotTauEffective, x,y);
-        end
-    end 
-    if (handles.markerStyle)
-        set(h,'Marker','*')
-        set(h,'linestyle','none')
-    else
-        set(h,'linestyle','-')
-        set(h,'Marker','none' )
-    end
-set(h,'linewidth',handles.lineWidth);
-guidata(hObject, handles);  
-% loglog(plotTauEffective, handles.calc.dN, handles.calc.tau );
-ylabel('Effective Lifetime, \tau_e_f_f (s^{-1})')
-xlabel('Minority Carrier,\DeltaN (cm^{-3})')
-%xlim([10e10 10e16])
-handles.toggle = 3;
+    updatePlot(hObject, eventdata, handles);    
+end
+
+function editLowPass_Callback(hObject, eventdata, handles)
+% temp = get(handles.radiobuttonLowPass,'value');
+% handles = guidata(hObject);
+% old = handles.oldData;
+% if (temp)
+%     temp = str2double(get(hObject,'String'));
+%     d=fdesign.lowpass('N,Fc',10,temp,48000);
+%     designmethods(d); 
+%     Hd = design(d);
+%     fvtool(Hd);
+%     handles.solar.vref = filter(Hd,old);
+%     guidata(hObject, handles); % something like submission of data to Obj of GUI from hanldes
+%     handles = guidata(hObject);
+%     recalc( hObject, handles );
+%     updatePlot(hObject, eventdata, handles); 
+% end
 
 
+
+
+function radiobuttonMovingAverage_Callback(hObject, eventdata, handles)
+handles.oldData = handles.solar.vref;
+guidata(hObject, handles);
+
+
+% --- Executes on button press in radiobuttonLowPass.
+function radiobuttonLowPass_Callback(hObject, eventdata, handles)
+handles.oldData = handles.solar.vref;
+guidata(hObject, handles);
+
+
+function btnTest_Callback(hObject, eventdata, handles)
+temp = get(handles.editMovingAverage,'value')
 
 function edit21_Callback(hObject, eventdata, handles)
 % hObject    handle to edit21 (see GCBO)
@@ -927,6 +921,19 @@ switch( temp )
 end
 sprintf('updateplot')
 
+function movingAverage(oldData, window, hObject, handles )
+    for i = 1:length(oldData)
+        temp = 0
+        for j = 0 : window
+            if ((i+j)<=length(oldData))
+            temp = temp + oldData(i + j)
+            end
+        end
+        if window > 0
+            handles.newData(i) = temp / window;
+        end
+    end
+ guidata(hObject, handles);   
 %-------------------------------------------------------------------------------------------------------
 
 
@@ -1153,6 +1160,33 @@ function comboBoxMuSetting_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes during object creation, after setting all properties.
+function editMovingAverage_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editMovingAverage (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+
+% --- Executes during object creation, after setting all properties.
+function editLowPass_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editLowPass (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
